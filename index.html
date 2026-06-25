@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Медицинская биология — шпаргалка</title>
+<style>
+  :root {
+    --bg: #f5f5f0;
+    --card: #ffffff;
+    --accent: #2d5a8e;
+    --accent2: #e8f0fb;
+    --text: #1a1a1a;
+    --muted: #555;
+    --border: #e0e0e0;
+    --section-bg: #2d5a8e;
+    --q-color: #1a3a5c;
+    --tag: #eef4ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  /* ── Поиск ── */
+  .search-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(245,245,240,0.92);
+    backdrop-filter: blur(12px);
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: center;
+  }
+  .search-bar input {
+    flex: 1;
+    padding: 10px 18px;
+    border-radius: 24px;
+    border: 1.5px solid var(--border);
+    font-size: 15px;
+    background: #fff;
+    outline: none;
+  }
+  .search-bar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(45,90,142,0.15); }
+  #count { font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+  /* ── Контейнер ── */
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 80px 24px 60px; }
+
+  h1.title {
+    text-align: center;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 36px;
+    letter-spacing: -0.5px;
+  }
+
+  /* ── Разделы ── */
+  .section {
+    background: var(--section-bg);
+    color: #fff;
+    padding: 13px 22px;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 36px 0 16px;
+    grid-column: 1 / -1;
+  }
+
+  /* ── Сетка карточек ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    gap: 16px;
+    align-items: start; /* карточки не растягиваются по высоте самой большой в ряду */
+  }
+
+  /* ── Карточка ── */
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 0;
+    overflow: hidden;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.10); transform: translateY(-2px); }
+
+  .card-q {
+    background: var(--accent2);
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: .95rem;
+    color: var(--q-color);
+    border-bottom: 1px solid #d6e5f7;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    user-select: none;
+  }
+  .card-q .num {
+    font-size: .8rem;
+    font-weight: 600;
+    color: #6a8fc0;
+    margin-right: 6px;
+    white-space: nowrap;
+  }
+  .card-q .arrow { font-size: 1.1rem; color: #6a8fc0; flex-shrink: 0; transition: transform .25s; }
+  .card-q.open .arrow { transform: rotate(90deg); }
+
+  .card-a {
+    padding: 16px 18px;
+    color: var(--muted);
+    font-size: .93rem;
+    line-height: 1.7;
+    display: none;
+  }
+  .card-a.visible { display: block; }
+
+  .card-a p { margin-bottom: 8px; }
+  .card-a p:last-child { margin-bottom: 0; }
+  .card-a b { color: var(--text); }
+
+  /* таблицы */
+  .card-a table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: .88rem; }
+  .card-a th, .card-a td { border: 1px solid #dde; padding: 8px 10px; }
+  .card-a th { background: #f0f4fb; font-weight: 600; }
+
+  /* ── Кнопка «открыть всё» ── */
+  .toolbar { text-align: right; margin-bottom: 12px; grid-column: 1 / -1; }
+  .btn {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .btn:hover { background: var(--accent); color: #fff; }
+
+  /* hidden by search */
+  .card.hidden { display: none; }
+  .section.hidden { display: none; }
+
+  /* ── Планшеты / небольшие ноутбучные окна ── */
+  @media (max-width: 1024px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  }
+
+  /* ── MacBook Air 15" в режиме сплит-вью / не на весь экран ── */
+  @media (max-width: 900px) {
+    .wrap { padding: 76px 18px 48px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  }
+
+  /* ── iPhone 16 / 16 Pro Max и прочие телефоны ── */
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; gap: 12px; }
+    .wrap { padding: 72px 12px 40px; }
+    .card-q { font-size: .9rem; padding: 13px 14px; }
+    .card-a { padding: 14px 14px; font-size: .9rem; }
+    .search-bar { padding: 10px 14px; }
+    .search-bar input { font-size: 14px; padding: 9px 16px; }
+    h1.title { margin-bottom: 24px; }
+    .section { padding: 11px 16px; font-size: 1rem; margin: 28px 0 14px; }
+    .card-a table { font-size: .82rem; }
+    .card-a th, .card-a td { padding: 6px 8px; }
+  }
+
+  /* ── Совсем узкие экраны (iPhone SE и т.п.) ── */
+  @media (max-width: 380px) {
+    .card-q .num { display: block; margin-bottom: 2px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="search-bar">
+  <input type="text" id="q" placeholder="Поиск по ключевым словам…" oninput="search(this.value)">
+  <span id="count"></span>
+</div>
+
+<div class="wrap">
+<h1 class="title">Медицинская биология — краткие ответы (362)</h1>
+
+<div class="grid" id="grid">
+
+<div class="section">Ядро клетки. Структурно-функциональные уровни организации наследственного материала про- и эукариот</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">1.</span>Ядерная оболочка, особенности организации и функции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Ядро окружено 2 мембранами (наружная связана с ЭПС, внутренняя — с ядерным матриксом), между ними перинуклеарное пространство. В оболочке есть поры — белковые комплексы (не просто отверстия). Крупные молекулы (РНК, белки) идут через поры активно с затратой энергии, мелкие — пассивно диффундируют. Функции: отделяет ядро от цитоплазмы, регулирует транспорт, обеспечивает ядерно-цитоплазматическое взаимодействие.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">2.</span>Перечислить компоненты интерфазного ядра и охарактеризовать ядерный матрикс</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Компоненты интерфазного ядра: ядерная оболочка, ядерный матрикс, ядерный сок (нуклеоплазма), ядрышко, хромосомы (хроматин). Ядерный матрикс — сетчатый белковый каркас (фибриллы), выполняет опорную функцию, организует хроматин.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">3.</span>Что представляют собой по химической природе ядрышки, их функция. У каких хромосом человека формируются ядрышки</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Ядрышко — плотный округлый участок ядра без мембраны, состоит из белков и РНК. Функция: синтез рРНК и сборка субъединиц рибосом. У человека ядрышки формируются в акроцентрических хромосомах 13, 14, 15, 21, 22 пар (во вторичных перетяжках, где гены рРНК).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">4.</span>Охарактеризовать ядерно-цитоплазматический транспорт веществ</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Активный транспорт (с затратой энергии, через белки-рецепторы поры) — для крупных молекул: РНК и рибосомные субъединицы из ядра, белки в ядро. Пассивный транспорт (простая диффузия через канал поры) — для мелких молекул: ионы, метаболиты, нуклеотиды.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">5.</span>В чем сущность полярности и антипараллельности полинуклеотидных цепей молекулы ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полярность: цепь имеет 5'-конец и 3'-конец, нуклеотиды присоединяются только к свободному 3'-концу. Антипараллельность: две цепи спирали направлены противоположно — 5'-конец одной соединён с 3'-концом другой.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">6.</span>В чем сущность комплементарности при формировании молекулы ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Комплементарность — строгое соответствие азотистых оснований: А-Т (2 водородные связи), Г-Ц (3 связи). Обеспечивает точное копирование генетической информации при репликации и транскрипции.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">7.</span>Дать определение гена и генома с точки зрения молекулярной генетики. Перечислить компоненты генома человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Ген — последовательность нуклеотидов ДНК с информацией о белке (или РНК — рРНК, тРНК). Геном — суммарное количество ДНК гаплоидного набора. Компоненты генома человека: уникальные (редко повторяющиеся), умеренно повторяющиеся и высоко повторяющиеся последовательности ДНК.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">8.</span>Что представляет собой физический размер генома человека и каков он в числовом выражении</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Физический размер генома человека ≈ 3,3×10⁹ пар нуклеотидов (около 3 млрд п.н.).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">9.</span>В чем сущность избыточности ДНК у эукариот. Каковы возможные функции избыточной ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Избыточность ДНК — несоответствие объёма ДНК и числа генов: 97% ДНК эукариот избыточно, кодирующая — лишь 3%. Возможные функции избыточной ДНК: регуляция активности генов, структурная (упаковка хроматина, центромеры, теломеры).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">10.</span>Как надо понимать экзонно-интронное строение уникальных генов. Что представляет собой экзон и сколько их может быть в уникальной последовательности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Экзонно-интронное строение — чередование кодирующих (экзоны) и некодирующих (интроны) участков гена. Экзон — кодирующий участок, который будет транслирован в аминокислотную последовательность. Число экзонов в гене: от 1 до 364, в среднем ~8.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">11.</span>Охарактеризовать умеренно повторяющиеся последовательности генома человека. Гены каких молекул находятся в этих последовательностях</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Умеренно повторяющиеся последовательности: 10–15% ядерной ДНК, повторяются сотни-тысячи раз. Содержат гены рРНК и белков-гистонов. Особенность — наличие кодирующих (гены) и некодирующих (спейсеры) участков.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">12.</span>Охарактеризовать высоко повторяющиеся последовательности генома человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Высоко повторяющиеся последовательности: 25–28% ядерной ДНК, повторяются сотни тысяч–миллионы раз, каждая копия короткая, нет кодирующих генов. Это структурный гетерохроматин (центромеры, теломеры).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">13.</span>В чем особенность организации генома прокариот по сравнению с геномом эукариот</span><span class="arrow">›</span></div>
+<div class="card-a"><p>У прокариот геном — 1 кольцевая молекула ДНК, гены составляют ~90% ДНК, нет интронов, нет повторов. У эукариот геном в 2+ хромосомах, гены ~30% (кодирующая часть гена ~3%), есть экзон-интронная структура и до 50% повторов (у человека).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">14.</span>Характеристика генома митохондрий</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Митохондриальный геном — кольцевая ДНК, 16 568 п.н. Содержит 13 генов белков, 22 гена тРНК, 2 гена рРНК (16S и 23S). Без интронов. Составляет ~10% всей ДНК клетки.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">15.</span>Что представляет собой хроматин, химический состав, особенности белков хроматина и их функции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Хроматин: белки ~65%, ДНК ~35%, плюс РНК, липиды, ионы металлов. Белки делятся на гистоновые (до 80% белков хроматина, выполняют структурную и регуляторную функцию) и негистоновые (структурная, регуляторная, ферментативная функции).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">16.</span>Представить типы белков-гистонов и определить их значение в организации и функционировании хромосом</span><span class="arrow">›</span></div>
+<div class="card-a"><p>5 классов гистонов: H1, H2A, H2B, H3, H4. Положительно заряжены, прочно связываются с отрицательно заряженной ДНК (регуляторная роль — препятствуют считыванию). H2A, H2B, H3, H4 формируют белковый остов нуклеосомы (ДНК делает 2 оборота), H1 фиксирует укладку нуклеосомной нити в соленоид (структурная функция).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">17.</span>Перечислить уровни компактизации ДНК в хромосоме</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Уровни компактизации ДНК: 1) формирование нуклеосом, 2) образование хроматиновой фибриллы (соленоид), 3) образование хроматиновых петель, 4) формирование метафазной хроматиды, 5) формирование метафазной хромосомы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">18.</span>Что представляет собой нуклеосома и как она формируется</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Нуклеосома — повторяющаяся структурная единица хроматина. Формируется: на белковый остов из 8 молекул гистонов накручивается ДНК (~2 оборота), затем переходит на следующий остов («нитка бус»).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">19.</span>Что представляет собой второй уровень компактизации ДНК в хромосоме</span><span class="arrow">›</span></div>
+<div class="card-a"><p>2-й уровень: нуклеосомная нить складывается, образуя хроматиновую фибриллу (соленоид) с участием гистона H1. Длина ДНК сокращается примерно в 40 раз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">20.</span>Что представляет собой третий уровень компактизации ДНК в хромосоме</span><span class="arrow">›</span></div>
+<div class="card-a"><p>3-й уровень: хроматиновая фибрилла складывается, образуя петли. Длина ДНК сокращается в ~1000 раз от исходной.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">21.</span>Что представляют собой 4-й и 5-й уровни компактизации ДНК в хромосоме</span><span class="arrow">›</span></div>
+<div class="card-a"><p>4-й уровень — формирование хроматид: петли скручиваются, складываются, спирализуются (сокращение в 2-3 тыс. раз). 5-й уровень — метафазные хромосомы: за счёт дальнейшей компактизации длина ДНК сокращается в ~10 000 раз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">22.</span>Что представляет собой центромеры хромосом и какие функции они выполняют</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Центромера (первичная перетяжка) — связывает сестринские хроматиды. Функции: удержание хромосом вместе, правильное выстраивание в метафазной пластинке, прикрепление к веретену деления, запуск анафазы, содержит повторяющиеся последовательности, делит хромосому на плечи.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">23.</span>Представить классификацию хромосом в зависимости от положения центромеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>4 группы хромосом по положению центромеры: 1) метацентрические (равноплечие), 2) субметацентрические (умеренно неравноплечие), 3) очень субметацентрические (резко неравноплечие), 4) акроцентрические (палочковидные — одно плечо очень короткое).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">24.</span>Что представляет собой ядрышко-образующие районы хромосом, их предназначение. Перечислить хромосомы человека, имеющие эти районы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Ядрышкообразующие районы — участки во вторичных перетяжках некоторых хромосом, содержащие гены рРНК. У человека это 13, 14, 15, 21, 22 пары хромосом (акроцентрические).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">25.</span>Структурная организация и функциональная значимость теломерных районов хромосом</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Теломеры — концевые участки хромосом, содержат повторы (ТТАГГГ)n с однонитевым 3'-концом. Функции: сохранение целостности хромосом, обеспечение полной репликации, прикрепление к ядерному матриксу, участие в конъюгации/кроссинговере, удержание сестринских хроматид.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">26.</span>Конститутивный (структурный) гетерохроматин, его локализация в хромосомах и функциональное назначение</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Конститутивный (структурный) гетерохроматин — в области центромер, теломер, некоторых внутренних участков. Генетически инертен (нет активных генов), содержит повторы ДНК, структурная функция.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">27.</span>Что представляет собой факультативный гетерохроматин, пример</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Факультативный гетерохроматин — гетерохроматизированные эухроматические районы (могут менять состояние). Пример: одна из двух Х-хромосом у женщин инактивирована и видна как тельце Барра (половой хроматин).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">28.</span>Что представляет собой эухроматин интерфазных хромосом, его функциональная значимость</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эухроматин — менее спирализованные, слабо окрашиваемые участки хромосом, содержат функционирующие гены. Слабая спирализация облегчает считывание наследственной информации.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">29.</span>Дать определение кариотипа. Что представляет собой кариотип человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Кариотип — диплоидный набор хромосом, характерный для соматических клеток вида. У человека 23 пары хромосом: 22 пары аутосом (одинаковы у обоих полов) + 1 пара половых хромосом (XX у женщин, XY у мужчин).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">30.</span>Дифференциальное окрашивание хромосом, его сущность и возможности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Дифференциальное окрашивание — метод, выявляющий индивидуальный рисунок поперечных полос (бэндов) разной интенсивности на хромосомах. Позволяет точно идентифицировать хромосомы и выявлять даже незначительные структурные изменения.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">31.</span>Что такое бенд при дифференциальной окраске хромосом. Определите положение представленного участка хромосомы: 1p31</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Бенд — участок хромосомы, отличающийся по интенсивности окраски от соседнего при дифференциальном окрашивании. 1p31 = первый бенд третьего района короткого плеча первой хромосомы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">32.</span>Какие хромосомы человека относятся к 1-2 группам согласно принятой классификации, их характеристика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>1 группа (А): хромосомы 1,2,3 — большие, метацентрические. 2 группа (В): хромосомы 4,5 — большие, очень субметацентрические.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">33.</span>Какие хромосомы человека относятся к 3-4 группам согласно принятой классификации, их характеристика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>3 группа (С): хромосомы 6-12, Х — средние, субметацентрические. 4 группа (D): хромосомы 13,14,15 — средние, акроцентрические со спутником.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">34.</span>Какие хромосомы человека относятся к 5-7 группам согласно принятой классификации, их характеристика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>5 группа (E): 16,17,18 — малые (16 метацентрическая, 17-18 субметацентрические). 6 группа (F): 19-20 — малые, метацентрические. 7 группа (G): 21,22,Y — малые, акроцентрические (21,22 со спутником, Y без спутника).</p></div></div>
+
+<div class="section">Временная организация клетки. Митотический цикл. Репликация ДНК. Митоз</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">35.</span>Раскрыть понятия: жизненный цикл клетки, митотический цикл</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл клетки — период от появления клетки до её деления или гибели. Митотический цикл — совокупность процессов подготовки клетки к делению и самого деления (интерфаза + митоз).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">36.</span>Назвать периоды интерфазы. Определить их соотношение по времени. Охарактеризовать G1 период</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Интерфаза = G1 (пресинтетический, 2n2c, 30-40% цикла) + S (синтетический, 2n4c, до 30%) + G2 (постсинтетический, 2n4c, 10-20%); митоз — 5-10%. В G1: синтез РНК, белков, рост клетки, накопление предшественников нуклеотидов, начало удвоения центриолей.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">37.</span>В чем сущность принципа полуконсервативности при репликации ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полуконсервативность репликации: каждая из двух родительских цепей ДНК служит матрицей для синтеза новой комплементарной цепи — в результате каждая дочерняя молекула состоит из одной старой и одной новой цепи.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">38.</span>Что представляют собой репликон и полирепликон</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Репликон — участок ДНК, способный к автономной репликации (единица репликации). Каждая эукариотическая хромосома — полирепликон, т.к. репликация идёт одновременно во многих точках.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">39.</span>Назовите ферменты, участвующие в репликации ДНК. Определите их функции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>ДНК-геликаза — раскручивает спираль (разрывает Н-связи). ДНК-топоизомераза — снимает торсионное напряжение. ДНК-полимераза — синтезирует новую цепь по матрице. ДНК-лигаза — сшивает фрагменты Оказаки. РНК-праймаза — синтезирует праймер.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">40.</span>Как функционирует репликационная вилка. Каким образом идет сборка полинуклеотидных цепей</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сборка на лидирующей цепи идёт непрерывно (от 3'- к 5'-концу матрицы, в направлении движения вилки). На отстающей цепи синтез прерывистый — фрагментами Оказаки, в обратном направлении; затем фрагменты сшивает ДНК-лигаза.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">41.</span>Как понимать, что при репликации ДНК репликационная вилка асимметрична</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Репликационная вилка асимметрична, т.к. лидирующая цепь синтезируется непрерывно и быстрее, а отстающая — медленнее, фрагментами Оказаки в противоположном направлении.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">42.</span>Что представляет собой праймер и какую роль в репликации ДНК выполняет. Почему он необходим</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Праймер — короткий фрагмент РНК (~10 нуклеотидов) со свободным 3'-концом, синтезируется РНК-праймазой. Необходим, так как ДНК-полимераза не может начать синтез «с нуля» — только присоединяет нуклеотиды к существующему 3'-концу.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">43.</span>В чем смысл редактирования (самокоррекции) при репликации ДНК. Как оно осуществляется</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Самокоррекция (редактирование) — отщепление ошибочно включённого нуклеотида ДНК-полимеразой и замена его правильным в процессе репликации. Снижает частоту ошибок репликации примерно в 10 раз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">44.</span>В чем особенность синтеза и включения белков-гистонов в состав хромосом при авторепродукции хромосом</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Гистоны синтезируются одновременно с репликацией ДНК (в S-периоде), быстро транспортируются в ядро и сразу включаются в состав новых нуклеосом на дочерних молекулах ДНК — синтез ДНК и сборка хроматина скоординированы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">45.</span>В чем заключаются особенности репликации ДНК теломер. Феномен концевой недорепликации ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Из-за невозможности достроить самый 5'-конец отстающей цепи при репликации, теломеры укорачиваются с каждым делением (концевая недорепликация). Это ограничивает число делений соматических клеток.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">46.</span>В чем сущность лимита «Хейфлика». Возможно ли восстановление длины теломер</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Лимит Хейфлика — предел числа делений соматической клетки, после которого она перестаёт делиться. Связан с укорочением теломер. Восстановление длины теломер возможно с помощью фермента теломеразы (активна в зародышевых, стволовых и раковых клетках).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">47.</span>Какие процессы происходят в постсинтетический период (G2)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>В G2 (постсинтетический период): завершается удвоение массы цитоплазмы, синтезируются белки для микротрубочек веретена деления, происходит синтез и накопление АТФ.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">48.</span>Перечислить процессы, происходящие в профазу митоза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Профаза митоза: клетка округляется, увеличивается вязкость цитоплазмы; центриоли расходятся к полюсам, формируется веретено деления; в ядре хромосомы конденсируются и спирализуются, ядрышки разрушаются.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">49.</span>Охарактеризовать прометафазу митоза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Прометафаза: разрушается ядерная оболочка, хромосомы продолжают спирализоваться. По обеим сторонам центромер формируются кинетохоры, от них отходят нити веретена, хромосомы движутся к экватору.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">50.</span>Что представляют собой кинетохоры, когда они формируются и какова их роль в митотическом делении клетки</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Кинетохоры формируются в прометафазу — слоистые белковые структуры по обеим сторонам центромеры. Роль: связывание сестринских хроматид, закрепление микротрубочек веретена, регуляция разъединения и движения хромосом при митозе.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">51.</span>Охарактеризовать метафазу митоза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Метафаза митоза: хромосомы выстраиваются по экватору, центромеры в одной плоскости — образуется метафазная пластинка. От центромер отходят кинетохорные нити к обоим полюсам.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">52.</span>Охарактеризовать анафазу митоза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Анафаза митоза: центромеры всех хромосом одновременно делятся, сестринские хроматиды расходятся к полюсам за счёт нитей веретена деления.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">53.</span>Перечислить процессы, происходящие в телофазу митоза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Телофаза митоза: процессы профазы в обратном порядке — исчезает веретено деления, формируется ядерная оболочка, хромосомы деспирализуются, формируются ядрышки, происходит цитокинез.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">54.</span>Перечислить уровни и факторы регуляции пролиферации клеток в многоклеточном организме</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Уровни регуляции пролиферации: внутриклеточный (циклины, CDK), внутритканевой (кейлоны — ингибиторы пролиферации), межтканевой (факторы роста, гормоны), нервный, иммунный.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">55.</span>Амитоз как тип деления клеток, особенности амитоза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Амитоз — прямое деление интерфазного ядра путём перетяжки, без формирования веретена деления, образуются неидентичные дву-/многоядерные клетки. Характерен для клеток печени, хряща, роговицы; чаще при патологии.</p></div></div>
+
+<div class="section">Половые клетки. Гаметогенез. Мейоз</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">56.</span>Охарактеризовать оболочки яйцеклетки человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Оболочки яйцеклетки человека: первичная (плазмолемма), вторичная (блестящая оболочка, zona pellucida — образована самой яйцеклеткой), третичная (лучистый венец — фолликулярные клетки).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">57.</span>Типы яйцеклеток, их особенности. Для каких животных характерны определенные типы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Изолецитальные — мало желтка, равномерно распределён (ланцетник, млекопитающие, человек). Телолецитальные — желток на вегетативном полюсе: умеренно (амфибии) или резко (птицы). Центролецитальные — желток в центре вокруг ядра (насекомые).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">58.</span>Из каких частей состоит сперматозоид человека, особенности его внутренней организации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сперматозоид: головка (ядро + акросома с гидролитическими ферментами), шейка (2 центриоли — проксимальная и дистальная), средняя часть (митохондрии — энергия), жгутик (движение).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">59.</span>Представить схему периодов гаметогенеза с названием клеток и указанием числа хромосом и ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Гаметогенез: сперматогонии/оогонии (2n2c) → размножение (митоз) → сперматоциты/овоциты I порядка (2n4c, мейоз I) → сперматоциты/овоциты II порядка (1n2c, мейоз II) → сперматиды/яйцеклетка (1n1c) → формирование зрелых гамет.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">60.</span>Охарактеризовать стадию лептотены профазы мейоза I</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Лептотена (тонких нитей) — соответствует ранней профазе. Хромосомы спирализуются, видны как тонкие нити, каждая уже реплицирована (2 хроматиды), концами прикреплена к ядерной мембране.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">61.</span>Охарактеризовать стадию зиготены профазы мейоза I</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Зиготена (сливающихся нитей) — гомологичные хромосомы находят друг друга и объединяются (конъюгация/синапсис) с молекулярной точностью. В конце стадии формируется синаптонемальный комплекс.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">62.</span>Охарактеризовать стадию пахитены профазы мейоза I</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Пахитена (толстых нитей) — хромосомы утолщаются и укорачиваются, хроматиды тесно контактируют, происходит кроссинговер (обмен участками гомологов), позже образуются хиазмы (перекрёсты).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">63.</span>Охарактеризовать стадию диплотены профазы мейоза I</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Диплотена (двойных нитей) — синаптонемальный комплекс распадается, гомологи начинают расходиться, но остаются связанными хиазмами. Хромосомы выглядят как двойные нити, продолжается спирализация.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">64.</span>Охарактеризовать стадию диакинеза профазы мейоза I</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Диакинез — стадия перед метафазой. Спирализация максимальна, хиазмы смещаются к концам хромосом. Исчезают ядерная оболочка и ядрышко, формируется веретено деления.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">65.</span>В чем сущность кроссинговера. Какое биологическое значение имеет этот процесс</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Кроссинговер — обмен гомологичных хромосом участками в профазе I (конъюгация). Значение: создаёт новые комбинации аллелей — генетическая рекомбинация, повышает наследственную изменчивость и приспособляемость организма.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">66.</span>Охарактеризовать метафазу мейоза I. Указать какое количество хромосом и ДНК будет содержаться в клетке в эту фазу</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Метафаза I: биваленты (пары гомологов) выстраиваются по экватору. Генетическая формула 2n4c.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">67.</span>Охарактеризовать анафазу мейоза I. Указать какое количество хромосом и ДНК будет содержаться в клетке в эту фазу</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Анафаза I: к полюсам расходятся целые гомологичные хромосомы (с двумя хроматидами), случайно распределяясь между будущими гаметами. Формула 2n4c.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">68.</span>Охарактеризовать телофазу мейоза I, какие клетки образуются в результате мейоза I</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Телофаза I: хромосомы деспирализуются, формируются два ядра, хромосомный набор гаплоидный, но каждая хромосома из 2 хроматид (1n2c). Образуются 2 гаплоидные клетки — гаметоциты II порядка.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">69.</span>Охарактеризовать профазу и метафазу мейоза II</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Профаза II (1n2c): разрушается ядерная мембрана, исчезают ядрышки, хромосомы укорачиваются, центриоли расходятся, строится веретено. Метафаза II (1n2c): формируются кинетохоры, хромосомы выстраиваются по экватору.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">70.</span>Охарактеризовать анафазу и телофазу мейоза II</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Анафаза II (1n2c→1n1c по хроматидам): центромеры делятся, хроматиды расходятся к полюсам. Телофаза II: веретено исчезает, хроматиды деспирализуются, формируется мембрана, цитокинез — итог: 4 клетки 1n1c.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">71.</span>Раскрыть биологическое значение мейоза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Биологическое значение мейоза: поддержание постоянства числа хромосом при размножении (редукция вдвое), создание генетического разнообразия гамет за счёт кроссинговера и независимого расхождения хромосом.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">72.</span>Указать особенности протекания сперматогенеза в мужском организме в разные периоды онтогенеза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сперматогенез: до пубертата — покой; с пубертата начинаются непрерывные фазы размножения, роста, созревания и формирования сперматозоидов (продолжается всю жизнь мужчины).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">73.</span>Указать особенности протекания овогенеза в женском организме в разные периоды онтогенеза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Овогенез: фаза размножения и часть роста проходят во внутриутробном периоде, овоциты I порядка останавливаются в профазе I до пубертата; созревание (мейоз) завершается циклически при овуляции, после оплодотворения.</p></div></div>
+
+<div class="section">Молекулярные основы наследственности. Транскрипция и трансляция</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">74.</span>Каким образом закодирована генетическая информация в ДНК. Дать определение генетического кода</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Генетический код — принцип записи последовательности аминокислот белка через последовательность нуклеотидов ДНК (по схеме ДНК(ген)→РНК→белок→признак).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">75.</span>Что представляют собой характеристики генетического кода: триплетен, не перекрывается, без запятых</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Триплетен — одна аминокислота кодируется тройкой нуклеотидов. Неперекрывающийся — один нуклеотид не входит в два соседних триплета. Без запятых — нет незначащих оснований между триплетами.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">76.</span>Что представляют собой характеристики генетического кода: вырожден, специфичен, универсален</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Вырожден — одну аминокислоту может кодировать несколько триплетов. Специфичен — определённому кодону соответствует только одна аминокислота. Универсален — одинаков у всех организмов.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">77.</span>Представить схему центральной догмы молекулярной биологии с пояснением</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Центральная догма: ДНК → РНК → белок. Информация из ДНК переписывается на РНК (транскрипция), РНК переносит её к месту синтеза белка, где реализуется как последовательность аминокислот (трансляция).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">78.</span>Перечислить особенности РНК-полимеразы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Особенности РНК-полимеразы: субстраты — рибонуклеотиды (АТФ, ГТФ, ЦТФ, УТФ); сама расплетает ДНК; не требует праймера для старта; не имеет корректирующей активности (1 ошибка на 10⁴ оснований).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">79.</span>Промотор, его структура в гене мРНК, роль в транскрипции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Промотор — регуляторная последовательность в 5'-области гена, определяющая место посадки РНК-полимеразы. Содержит ТАТА-бокс и ЦААТ-домен, с которыми связываются специфические белки, отмечая старт транскрипции.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">80.</span>Транскрипция (синтез мРНК на матрице ДНК). Суть стадий: инициации, элонгации и терминации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Инициация: РНК-полимераза связывается с промотором, расплетает виток ДНК. Элонгация: синтез мРНК по принципу комплементарности вдоль гена. Терминация: достижение терминатора — мРНК освобождается, спираль ДНК восстанавливается.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">81.</span>Смысловая и антисмысловая цепи ДНК, их роль в транскрипции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Матричная (антисмысловая) цепь — с неё считывается РНК. Смысловая (кодогенная) цепь — соответствует по последовательности образующейся РНК (но с урацилом вместо тимина), на ней расположены гены.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">82.</span>Поясните понятия: транскрипт, транскриптон, транскриптом</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Транскрипт — первичный продукт транскрипции одного гена (пре-РНК). Транскриптон — единица транскрипции у эукариот (ген + регуляторные участки). Транскриптом — совокупность всех РНК, синтезированных в клетке в данный момент.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">83.</span>Какие виды РНК синтезирует РНК-полимераза I</span><span class="arrow">›</span></div>
+<div class="card-a"><p>РНК-полимераза I синтезирует рРНК (5,8S, 18S, 28S рРНК) — в ядрышке.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">84.</span>Какие виды РНК синтезирует РНК-полимераза II</span><span class="arrow">›</span></div>
+<div class="card-a"><p>РНК-полимераза II синтезирует мРНК, малые ядерные РНК (мяРНК), микроРНК, малые интерферирующие РНК и другие малые РНК.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">85.</span>Какие виды РНК синтезирует РНК-полимераза III</span><span class="arrow">›</span></div>
+<div class="card-a"><p>РНК-полимераза III синтезирует тРНК, 5S рРНК и некоторые другие малые РНК.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">86.</span>В чем сущность обратной транскрипции, ее значение</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Обратная транскрипция — синтез ДНК на матрице РНК (с помощью ревертазы). Значение: необходимый этап жизненного цикла РНК-вирусов — переводит РНК-геном в ДНК для дальнейшей транскрипции.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">87.</span>Что понимают под процессингом первичных транскриптов. Назвать из каких отдельных этапов он складывается</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Процессинг первичных транскриптов — формирование зрелых РНК из первичных. Этапы (для мРНК у эукариот): кэпирование 5'-конца, процессинг 3'-конца (полиаденилирование), сплайсинг (удаление интронов).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">88.</span>К чему сводится реакция сплайсинга при формировании мРНК. Роль сплайсосомы в этом процессе</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сплайсинг — вырезание интронов и сшивание экзонов ферментами лигазами. Происходит с участием сплайсосомы — комплекса белков и малой ядерной РНК, которая узнаёт границы интронов.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">89.</span>Когда происходит и к чему сводится кэпирование 5′-концевой области первичного транскрипта мРНК. Транскрипты каких РНК-полимераз подвергаются кэпированию</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Кэпирование происходит сразу после транскрипции первых ~20 нуклеотидов — присоединение 7-метилгуанозина к 5'-концу через 5'-5' связь. Подвергаются кэпированию транскрипты РНК-полимеразы II.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">90.</span>Перечислить значение кэпирования мРНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Значение кэпирования: обеспечивает элонгацию, защищает от деградации экзонуклеазами, способствует сплайсингу и полиаденилированию, требуется для экспорта из ядра, обеспечивает связывание с рибосомой.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">91.</span>К чему сводится процессинг 3′-концевой области пре-(м)РНК. Какую роль играет этот процесс</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Процессинг 3'-конца — полиаденилирование: отщепление концевого участка и присоединение поли-А-хвоста (~200 адениловых остатков). Роль: защита от деградации, экспорт из ядра, стабильность мРНК.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">93.</span>Что представляет собой альтернативный сплайсинг. Способы альтернативного сплайсинга. Какое биологическое значение имеет эта форма сплайсинга</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Альтернативный сплайсинг — соединение экзонов в разных комбинациях без нарушения их порядка. Способы: альтернативный промотор, альтернативный участок полиаденилирования, альтернативный выбор экзонов. Значение: один ген кодирует много разных белков.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">94.</span>Что представляют собой рибосомы. Указать молекулярный состав большой и малой субъединиц рибосомы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Рибосома — немембранный органоид трансляции. Малая субъединица: 18S рРНК + ~30 белков. Большая субъединица: 3 рРНК (5S, 5.8S, 28S) + ~40 белков.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">95.</span>В чем заключаются акцепторная и адапторная функции транспортных РНК. С какими участками молекулы тРНК связаны эти функции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Акцепторная функция тРНК — способность ковалентно связываться с аминокислотой (образуя аминоацил-тРНК), связана с 3'-концом тРНК (ССА-конец). Адапторная функция — узнавание кодона мРНК антикодоном тРНК, связана с антикодоновой петлёй.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">96.</span>Какую функцию в биосинтезе белка выполняют ферменты аминоацил-тРНК-синтетазы. Кодон и антикодон</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Функция фермента аминоацил-тРНК синтетазы в биосинтезе белка состоит в связывании ковалентной связью тРНК с остатком аминокислоты. При этом тРНК превращается в аминоацил-тРНК. Для каждой аминокислоты существует своя тРНК и своя аминоацил-тРНК синтетаза. Кодон — триплет мРНК, кодирующий аминокислоту; антикодон — триплет тРНК, узнающий кодон.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">97.</span>К чему сводится инициация трансляции. Что представляет собой инициаторный комплекс</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Инициация трансляции: формируется инициаторный комплекс — малая субъединица рибосомы + инициаторная метионин-тРНК узнают старт-кодон АУГ на мРНК, затем присоединяется большая субъединица.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">98.</span>Представить процесс наращивания (элонгации) полипептидной цепи на рибосоме при трансляции с рассмотрением его этапов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Элонгация: 1) узнавание кодона — связывание антикодона тРНК с кодоном мРНК; 2) образование пептидной связи (фермент пептидилтрансфераза); 3) транслокация — рибосома смещается на следующий кодон.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">99.</span>К чему сводится и чем заканчивается терминация трансляции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Терминация: в А-участке оказывается стоп-кодон, связываются факторы терминации, гидролизуется связь пептид-тРНК, тРНК отсоединяется, рибосома распадается на субъединицы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">100.</span>Какими нуклеотидами представлены на иРНК старт-кодон и терминирующие кодоны, какую функцию выполняют при трансляции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Старт-кодон — АУГ (кодирует метионин). Стоп-кодоны — УАА, УАГ, УГА (для них нет тРНК, обозначают конец синтеза полипептида).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">101.</span>Что представляют собой полирибосомы (полисомы), их функциональное значение</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полисома (полирибосома) — мРНК с несколькими рибосомами одновременно. Функция: ускоряет синтез конкретного белка. Свободные полисомы синтезируют белки для самой клетки, полисомы на ЭПС — белки на экспорт.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">102.</span>К чему сводятся посттрансляционные изменения белка</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Посттрансляционные изменения белка: отщепление лишних аминокислот, сворачивание (фолдинг), формирование четвертичной структуры, гликозилирование, фосфорилирование и другие модификации, придающие белку функциональную форму.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">103.</span>Раскрыть сущность понятия — оперон. Как устроен лактозный оперон</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Оперон — группа сцепленных генов под общим промотором и оператором, транскрибируемых как одна полицистронная мРНК. Лактозный оперон: 3 структурных гена + промотор + оператор + ген-регулятор (вне оперона), кодирующий белок-репрессор.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">104.</span>Как осуществляется регуляция активности генов лактозного оперона бактерии кишечной палочки</span><span class="arrow">›</span></div>
+<div class="card-a"><p>В отсутствие лактозы белок-репрессор блокирует оператор/промотор — транскрипции нет. При появлении лактозы (индуктор) она связывает репрессор, освобождая оператор — РНК-полимераза транскрибирует структурные гены (регуляция на уровне инициации транскрипции).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">105.</span>Регуляция экспрессии генов на уровне инициации транскрипции. Роль промоторов, энхансеров, сайленсеров и инсуляторов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Промоторы — связывают РНК-полимеразу, запускают транскрипцию. Энхансеры — усиливают транскрипцию (действуют на расстоянии). Сайленсеры — подавляют транскрипцию. Инсуляторы — блокируют действие энхансеров на соседние гены.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">106.</span>Регуляция экспрессии генов на уровне трансляции, роль малых интерферирующих РНК (миРНК)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Регуляция на уровне трансляции через миРНК: малые интерферирующие РНК (19-25 п.н.) комплементарно связываются с мРНК, вызывают её деградацию ферментами-эндонуклеазами — трансляция блокируется.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">107.</span>Регуляция экспрессии генов на уровне трансляции: роль микроРНК (мкРНК)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>МикроРНК (18-24 нт, одноцепочечные) связываются с мРНК-мишенью, блокируют трансляцию и запускают разрушение мРНК.</p></div></div>
+
+<div class="section">Закономерности наследственности. Классическая генетика</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">108.</span>В чем сущность гибридологического метода</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Гибридологический метод: скрещивание организмов, различающихся по одной/нескольким альтернативным признакам; точный количественный учёт потомков; индивидуальный анализ потомства в ряду поколений.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">109.</span>Сформулировать первый закон Г. Менделя и подтвердить его схемой скрещивания</span><span class="arrow">›</span></div>
+<div class="card-a"><p>1-й закон Менделя (единообразия): при скрещивании по одной паре альтернативных признаков всё F1 единообразно и несёт признак одного из родителей (АА × аа → всё Аа, доминантный фенотип).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">110.</span>Сформулировать закон расщепления (II-й закон Менделя) и подтвердить его схемой скрещивания</span><span class="arrow">›</span></div>
+<div class="card-a"><p>2-й закон Менделя (расщепления): при скрещивании гибридов F1 (Аа × Аа) в F2 расщепление по фенотипу 3:1, по генотипу 1АА:2Аа:1аа.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">111.</span>Описать опыты, которыми Г. Мендель раскрыл сущность закона расщепления, т.е. установил характер расщепления по генотипу</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Мендель скрещивал растения с разным цветом семян (жёлтые × зелёные) → F1 единообразное (жёлтое); самоопыление F1 → F2: 6022 жёлтых : 2001 зелёное (≈3:1) — вывод о расщеплении 75%:25%.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">112.</span>В чем сущность гипотезы (закона) «чистоты» гамет</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Закон «чистоты» гамет: при образовании половых клеток в каждую гамету попадает только один аллель из пары, гамета «чиста» от другого аллеля (Аа → половина гамет А, половина а, без смешивания).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">113.</span>Сущность анализирующего скрещивания. Какое значение оно имеет. Объяснение подтвердите схемой скрещивания</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Анализирующее скрещивание — испытуемую особь (доминантный признак) скрещивают с гомозиготной рецессивной (аа). Используется для определения гетерозиготности. Аа×аа → 1Аа:1аа.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">114.</span>Дать цитологическое объяснение закона расщепления (2 закона Г. Менделя)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Цитологическое объяснение расщепления: у гетерозиготы Аа доминантный и рецессивный аллели в гомологичных хромосомах. При мейозе гомологи расходятся — половина гамет несёт А, половина а. Случайное сочетание гамет даёт 25%АА:50%Аа:25%аа.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">115.</span>Дайте формулировку III закона Г.Менделя и подтвердите его схемой скрещивания</span><span class="arrow">›</span></div>
+<div class="card-a"><p>3-й закон Менделя (формулировка): при дигибридном скрещивании F1×F1 во втором поколении гены разных пар наследуются независимо, комбинируясь во всех возможных сочетаниях. Пример: ААВВ×аавв→F1 АаВв→F2 расщепление 9:3:3:1.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">116.</span>Дать цитологическое объяснение закона независимого наследования признаков (III закона Г. Менделя)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Цитологическое объяснение: гены разных пар расположены в разных (негомологичных) хромосомах, которые расходятся в мейозе независимо друг от друга — отсюда независимое комбинирование признаков.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">117.</span>Представить схему анализирующего скрещивания опытов Т.Моргана, доказывающих полное сцепление генов у дрозофилы. Дать цитологическое объяснение полученных результатов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Опыты Моргана (полное сцепление): гибридный самец дрозофилы (BbVv) при анализирующем скрещивании даёт только 2 фенотипических класса (как у родителей) — гены B и V наследуются совместно, т.к. находятся в одной хромосоме, а у самцов дрозофилы кроссинговера нет.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">118.</span>Определить понятие «сцепленное наследование». Что понимают под группой сцепления генов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сцепленное наследование — совместное наследование генов, ограничивающее их свободное комбинирование. Группа сцепления — гены, расположенные в одной хромосоме и наследуемые совместно.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">119.</span>Представить схему анализирующего скрещивания опытов Т. Моргана, доказывающих явление неполного сцепления генов у дрозофилы. Дать цитологическое объяснение полученных результатов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Опыты Моргана (неполное сцепление): у гибридной самки дрозофилы при анализирующем скрещивании получено 4 фенотипических класса вместо 2 — сцепление частично нарушается кроссинговером в мейозе самки.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">120.</span>Какое соотношение существует между величиной кроссинговера, силой сцепления между генами и расстоянием между ними. Правило Т. Моргана</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Величина кроссинговера = доля кроссоверных особей от общего числа потомков (%). Чем больше величина кроссинговера, тем меньше сила сцепления генов и тем дальше они расположены друг от друга (правило Моргана).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">121.</span>Что представляют собой генетическая карта хромосомы. На каких принципах основано построение генетических карт хромосом. С чем связаны трудности построения генетических карт хромосом человека по анализу родословных</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Генетическая карта хромосомы — схема взаимного расположения генов с расстояниями в % кроссинговера (морганидах). Строится на основе анализирующих скрещиваний. Трудность для человека: невозможность направленных скрещиваний, малое число потомков.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">122.</span>Каким образом используется гибридизация клеток для картирования хромосом</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Гибридизация соматических клеток человека и мыши: гибридные клетки постепенно теряют хромосомы человека; когда остаётся одна хромосома, её идентифицируют дифференциальным окрашиванием и связывают с наличием определённого фермента — так картируют гены.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">123.</span>Что представляют собой цитологическая карта хромосомы. На чем основано построение цитологических карт хромосом</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Цитологическая карта хромосомы — схема с указанием фактического расположения генов на хромосоме, основана на хромосомных перестройках; позволяет сопоставить генетические расстояния с реальным положением генов.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">124.</span>Сформулировать положения хромосомной теории</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Хромосомная теория (Морган): 1) гены в хромосомах; 2) расположены линейно; 3) каждый ген занимает определённое место (локус); 4) каждая хромосома — группа сцепления; 5) число групп сцепления = число хромосом в гаплоидном наборе.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">125.</span>Назвать типы определения пола, существующие в природе и для каких организмов они характерны</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Типы определения пола: ХО (Protenor, клопы, жуки), XY (Lygaeus — дрозофила, человек, большинство позвоночных), ZO/ZW (Abraxas — птицы, некоторые рыбы и пресмыкающиеся, гетерогаметен женский пол), гаплодиплоидия (пчёлы, муравьи — самки диплоидны, самцы гаплоидны).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">126.</span>Возможно ли переопределение пола в жизненном цикле организмов. Если «да» — приведите примеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Да, переопределение пола возможно: например, у некоторых рыб и амфибий пол может меняться в течение жизни под действием гормональных/環境ных факторов (протерандрия/протерогиния у рыб).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">127.</span>Отметить особенности X- и Y-хромосом человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Х-хромосома — крупная, содержит много генов (более 1000), общая с У по некоторым участкам. У-хромосома — маленькая, в основном гетерохроматиновая, содержит ген SRY (определяет мужской пол) и немного генов.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">128.</span>Дать характеристику типа X наследования, сцепленного с полом у человека. Привести примеры этого типа наследования</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Тип Х-наследования: гены в негомологичном участке Х, нет аллелей в У. Примеры: гемофилия, дальтонизм. Рецессивные признаки чаще проявляются у мужчин (одна Х), доминантные — у женщин.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">129.</span>Дать характеристику типа Y наследования, сцепленного с полом у человека. Приведите примеры этого типа наследования</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Тип У-наследования (голандрическое): гены в негомологичном участке У, нет аллелей в Х. Передаются строго от отца к сыну в каждом поколении. Пример: гипертрихоз ушной раковины.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">130.</span>Дать характеристику типа XY наследования, сцепленного с полом у человека. Приведите примеры этого типа наследования</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Тип ХУ-наследования: гены в гомологичных участках Х и У (частично сцеплены с полом). Примеры: полная цветовая слепота, пигментная ксеродермия, волчья пасть, заячья губа.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">131.</span>В чем сущность полного доминирования как формы взаимодействия аллельных генов. Примеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полное доминирование: в фенотипе проявляется только доминантный аллель, рецессивный полностью подавлен. Примеры: карий цвет глаз (дом.) / голубой (рец.); гемофилия (рец.).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">132.</span>В чем сущность неполного доминирования как формы взаимодействия аллельных генов. Пример</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Неполное доминирование: гетерозигота имеет промежуточный фенотип между родительскими. Пример: окраска цветков ночной красавицы — АА(красный)×аа(белый)→Аа(розовый).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">133.</span>В чем сущность кодоминирования как формы взаимодействия аллельных генов. Пример</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Кодоминирование: оба аллеля проявляются одновременно, формируя новый признак. Пример: группы крови — IᴬIᴮ дают IV группу крови (оба антигена А и В присутствуют).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">134.</span>Сверхдоминирование как форма взаимодействия аллельных генов. Пример</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сверхдоминирование: гетерозигота превосходит по выраженности признака обе родительские гомозиготы (гетерозис). Пример: гетерозиготы HbA/HbS более устойчивы к малярии, чем гомозиготы HbA/HbA.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">135.</span>Аллельное исключение как форма взаимодействия аллельных генов. Пример</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Аллельное исключение: в разных клетках организма-гетерозиготы активен то один, то другой аллель. Пример: инактивация одной из двух Х-хромосом (тельце Барра) — мозаицизм по Х-сцепленным признакам у женщин.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">136.</span>Межаллельная комплементация как форма взаимодействия аллельных генов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Межаллельная комплементация: два разных мутантных аллеля совместно (в гетерозиготе) могут восстановить нормальный фенотип за счёт взаимодействия на уровне четвертичной структуры белка (компенсация дефектов пептидов).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">137.</span>Сущность явления множественного аллелизма. Примеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Множественный аллелизм — существование более двух аллелей одного гена в популяции. Пример: группы крови АВО (3 аллеля — IA, IB, i0).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">138.</span>Комплементарность как форма взаимодействия неаллельных генов. Примеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Комплементарность (неаллельных генов) — два доминантных неаллельных гена совместно дают новый признак, по отдельности — не проявляются. Пример: форма гребня у кур (AaBb→ореховидный, AAbb или aaBB — другие формы).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">139.</span>В чем сущность доминантного эпистаза как формы взаимодействия неаллельных генов. Пример</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Доминантный эпистаз: доминантный аллель одного гена подавляет проявление другого неаллельного гена. Пример: окраска тыкв — ген А (белый) подавляет В/b (жёлтый/зелёный); расщепление 12:3:1.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">140.</span>В чем сущность рецессивного эпистаза как формы взаимодействия неаллельных генов. Пример</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Рецессивный эпистаз: рецессивная аллель в гомозиготе (hh) подавляет действие доминантных/рецессивных аллелей другого гена. Пример: бомбейский феномен — генотип hh маскирует группу крови по системе АВО.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">141.</span>В чем сущность полимерии как формы взаимодействия неаллельных генов. Пример</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полимерия: несколько доминантных неаллельных генов аддитивно влияют на один признак (количественный). Чем больше доминантных генов — тем сильнее выражен признак. Пример: интенсивность пигментации кожи человека.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">142.</span>Что понимают под экспрессивностью и пенетрантностью. Полная и неполная пенетрантность. Примеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Экспрессивность — степень выраженности признака у разных особей. Пенетрантность — частота проявления гена в фенотипе у его носителей. Полная пенетрантность (100%) — горошины Менделя; неполная — хорея Гентингтона.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">143.</span>Что понимают под плейотропией. Что такое генокопия</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Плейотропия — влияние одного гена на несколько признаков. Генокопия — фенотипически сходный признак вызван разными генами (не аллельными вариантами одного гена).</p></div></div>
+
+<div class="section">Закономерности изменчивости и мутагенез</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">144.</span>Что понимают под нормой реакции. Широкая и узкая норма реакции</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Норма реакции — диапазон фенотипов одного генотипа в разных условиях среды. Узкая (цвет глаз, группы крови) — мало меняется. Широкая (масса тела, пигментация) — сильно зависит от среды, контролируется полигенами.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">145.</span>Что понимают под случайной (стохастической) фенотипической изменчивостью</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Случайная (стохастическая) фенотипическая изменчивость — изменения признаков, возникающие случайно, без целенаправленного действия какого-либо фактора среды.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">146.</span>Что понимают под комбинативной изменчивостью</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Комбинативная изменчивость — новые сочетания генов у потомства за счёт: 1) кроссинговера, 2) независимого распределения хромосом в мейозе, 3) случайного сочетания гамет при оплодотворении. Сами гены не меняются.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">147.</span>Дать определение мутации. Теория мутаций де Фриза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Мутация — внезапное наследуемое изменение генетического материала. Теория де Фриза (1901): мутации возникают внезапно без переходов; устойчивы; качественные изменения; разнонаправленные (полезные/вредные); могут повторяться.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">148.</span>Охарактеризовать мутации по характеру фенотипических изменений</span><span class="arrow">›</span></div>
+<div class="card-a"><p>По фенотипу мутации делят на: морфологические (изменение строения — альбинизм, карликовость), физиологические (нарушение функций — кровообращения, дыхания), биохимические (изменение синтеза веществ — ферментов).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">149.</span>Охарактеризовать мутации по влиянию на жизнеспособность</span><span class="arrow">›</span></div>
+<div class="card-a"><p>По влиянию на жизнеспособность: летальные (гибель), полулетальные (резко снижают жизнеспособность), условно летальные (гибель только в определённых условиях), стерильные (снижают плодовитость), нейтральные, усиливающие.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">150.</span>Точечные мутации: транзиции и трансверсии</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Точечные мутации (замена нуклеотидов): транзиции — пурин на пурин, пиримидин на пиримидин (А↔Г, Т↔Ц). Трансверсии — пиримидин на пурин и наоборот (8 видов). У человека транзиции чаще.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">151.</span>Что представляет собой миссенс-мутация</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Миссенс-мутация — замена нуклеотида приводит к замене одной аминокислоты на другую в белке, что изменяет свойства/функцию белка. Пример: серповидноклеточная анемия (глутаминовая кислота → валин).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">152.</span>Что представляет собой нонсенс-мутация</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Нонсенс-мутация — замена нуклеотида превращает значащий триплет в стоп-кодон, что приводит к обрыву синтеза полипептида. Пример: УАЦ (тирозин) → УАА (стоп).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">153.</span>Мутации со сдвигом рамки считывания</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Мутации со сдвигом рамки считывания — вставка (инсерция) или выпадение (делеция) нуклеотидов сдвигает все последующие триплеты, что искажает всю дальнейшую аминокислотную последовательность.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">154.</span>Мутации типа экспансии тринуклеотидных повторов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Экспансия тринуклеотидных повторов — увеличение числа триплетных повторов в гене (например, ЦАГ), что приводит к появлению «трека» одинаковых аминокислот в белке. Пример: хорея Гентингтона (норма 10-35 копий ЦАГ, у больных 36-120).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">155.</span>Первичные повреждения ДНК, ведущие к мутациям</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Первичные повреждения ДНК: разрывы нитей, повреждение оснований, межцепочечные сшивки, сшивки ДНК-белок, депуринизация — возникают спонтанно с высокой частотой (от внутренних и внешних факторов).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">156.</span>Фиксация мутации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Фиксация мутации — превращение части первичных повреждений ДНК в истинные мутации (остальные устраняет репарация). Результат: замены пар оснований, вставки/выпадения (инсерции/делеции), перестановки.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">157.</span>Неоморфные и аморфные мутации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Неоморфные мутации — появление нового, отличного от нормы признака. Аморфные мутации — потеря признака. Оба варианта возникают из-за искажения генетической информации точечными мутациями.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">158.</span>Механизмы спонтанных мутаций</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Спонтанные мутации возникают без видимого внешнего воздействия — из-за ошибок репликации, таутомерных переходов оснований, действия внутренних метаболитов (активные формы кислорода) и др.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">159.</span>Обратимость мутаций</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Генные мутации обратимы: прямые мутации (А→а, ген дикого типа → мутантный) происходят чаще, обратные (а→А) — реже. Большинство новых мутаций рецессивны и вредны.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">160.</span>Мутации в соматических и половых клетках</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Мутации в половых клетках передаются потомству (наследственные). Мутации в соматических клетках не передаются потомству, но могут приводить к мозаицизму, опухолям в пределах организма.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">161.</span>Мутагенное действие ионизирующего излучения</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Ионизирующее излучение вызывает мутации через радиолиз воды (образуются радикалы ОН·, О2⁻, Н2О2) и прямое повреждение ДНК — разрывы фосфодиэфирных связей, хромосомные перестройки.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">162.</span>Мутагенное действие ультрафиолета</span><span class="arrow">›</span></div>
+<div class="card-a"><p>УФ-излучение вызывает образование пиримидиновых димеров (чаще между соседними тиминами в одной цепи) — нарушает конформацию ДНК, ингибирует репликацию, что ведёт к мутациям.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">163.</span>В чем проявляется мутагенное действие алкилирующих соединений</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Алкилирующие соединения (этиленимин, иприт и др.) вводят в ДНК метильные/этильные радикалы (алкилирование), главное следствие — транзиции ГЦ→АТ (например, через образование 6-этилгуанина).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">164.</span>В чем проявляется мутагенное действие азотистой кислоты</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Азотистая кислота вызывает окислительное дезаминирование оснований: аденин→гипоксантин (пара с цитозином), цитозин→урацил (пара с аденином) — генные мутации по типу транзиций, а также делеции.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">165.</span>В чем проявляется мутагенное действие химически модифицированных аналогов азотистых оснований</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Аналоги азотистых оснований (например, 5-бромурацил вместо тимина) включаются в ДНК вместо нормальных оснований и спариваются неправильно (с гуанином) — следующая репликация даёт транзицию А-Т→Г-Ц.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">166.</span>В чем проявляется мутагенное действие акриловых красителей</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Акриловые красители (интеркалирующие агенты) внедряются между основаниями ДНК, искажая структуру спирали — вызывают вставки/выпадения нуклеотидов (сдвиг рамки считывания).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">167.</span>Какие биологические объекты и каким образом могут обладать мутагенным действием</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Биологические мутагены: мобильные генетические элементы (повреждают ДНК при перемещении), вирусы (встраивают свою ДНК, повреждая хозяина), токсические продукты жизнедеятельности паразитов (действуют как химические мутагены).</p></div></div>
+
+<div class="section">Репарация ДНК и наследственная патология</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">168.</span>К чему сводится механизм фотореактивации как способа репарации ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Фотореактивация: фермент фотолиаза поглощает фотон синего света и расщепляет ковалентные связи в пиримидиновых димерах, образовавшихся под действием УФ, восстанавливая нормальную структуру ДНК.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">169.</span>Представить этапы дорепликативной эксцизионной репарации нуклеотидов с указанием ферментов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эксцизионная репарация нуклеотидов: 1) эндонуклеаза узнаёт повреждение и делает разрез у 5'-конца; 2) экзонуклеаза вырезает повреждённый участок; 3) ДНК-полимераза заполняет брешь; 4) ДНК-лигаза сшивает разрыв.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">170.</span>Представить этапы дорепликативной эксцизионной репарации оснований с указанием ферментов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эксцизионная репарация оснований: ДНК-гликозилаза удаляет повреждённое основание → АП-эндонуклеаза разрезает цепь → удаляется сахарофосфат → ДНК-полимераза заполняет брешь → ДНК-лигаза сшивает цепь.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">171.</span>Каков механизм пострепликативной репарации ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Пострепликативная репарация: происходит при большом числе повреждений, когда эксцизионная репарация не успевает. ДНК-полимераза «перескакивает» повреждение, брешь застраивается рекомбинацией с донорской неповреждённой цепью (с белком RecA).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">172.</span>К чему сводится репарация разрывов двойной спирали у млекопитающих</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Репарация двунитевых разрывов у млекопитающих идёт двумя путями: негомологичное соединение концов (быстрое, но с ошибками) и гомологичная рекомбинация (точное восстановление по неповреждённой копии).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">173.</span>К чему сводится репарация ошибок репликации ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Репарация ошибок репликации (mismatch repair): распознавание некомплементарного нуклеотида → вырезание участка цепи → заполнение бреши по матрице верной родительской цепи.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">174.</span>В чем смысл SOS-репарации ДНК</span><span class="arrow">›</span></div>
+<div class="card-a"><p>SOS-репарация активируется при критическом числе повреждений, когда обычные системы не справляются. Индуцируется белок, позволяющий ДНК-полимеразе достраивать цепь напротив дефектов — ДНК удваивается, но с большим числом ошибок.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">175.</span>Какие заболевания человека получили название генные болезни. Как можно представить механизм развития генной болезни</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Генные болезни — наследственные заболевания, вызванные мутацией одного гена (моногенные). Механизм: мутация гена → нарушение синтеза белка-фермента (или структурного белка) → нарушение метаболизма/функции → клинические проявления.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">176.</span>Какие заболевания относят к моногенным наследственным болезням обмена веществ. Привести примеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Моногенные болезни обмена веществ — фенилкетонурия, галактоземия, альбинизм. Развиваются из-за мутаций генов, контролирующих ферменты, и нарушения определённого типа обмена (аминокислотного, углеводного и др.).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">177.</span>К чему приводит замена отдельных нуклеотидов в генах гемоглобина. Серповидноклеточная анемия</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Серповидноклеточная анемия: замена глутаминовой кислоты на валин в 6 положении β-цепи гемоглобина (HbA→HbS). Снижается растворимость, эритроциты деформируются (серповидная форма), у гомозигот — гемолитическая анемия.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">178.</span>Какие мутации генов гемоглобина приводят к нарушению синтеза этого белка. Альфа- и бета-талассемии</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Талассемии — мутации в генах глобина, нарушающие синтез α- или β-цепей гемоглобина (количественный дефект синтеза, а не качественный, как при серповидноклеточной анемии). Приводят к анемии разной степени тяжести.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">179.</span>Какие заболевания получили название болезни репарации ДНК. Приведите примеры таких заболеваний</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Болезни репарации ДНК: синдромы хромосомной нестабильности (анемия Фанкони, синдром Блума, синдром Луи-Бар), прогерии (Хатчинсона-Гилфорда, Вернера), пигментная ксеродермия (нарушение эксцизионной репарации УФ-повреждений).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">180.</span>Представить возможные механизмы возникновения хромосомных мутаций</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Механизмы хромосомных мутаций: 1) разрывы хромосом с потерей/перегруппировкой материала (могут быть до/после репликации — изохроматидный/хроматидный разрыв); 2) нарушения кроссинговера (неравный кроссинговер).</p></div></div>
+
+<div class="section">Хромосомные аномалии. Типы, механизмы и медицинское значение</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">181.</span>В чем отличие и чем характеризуются сбалансированные и несбалансированные хромосомные мутации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сбалансированные мутации: баланс генов не нарушен, фенотипических проявлений обычно нет. Несбалансированные: баланс нарушен, изменена доза генов — фенотипические нарушения, задержка развития, пороки.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">182.</span>Охарактеризовать делеции как хромосомные мутации. Примеры у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Делеция — потеря участка хромосомы (терминальная — концевая, интерстициальная — срединная). У человека: делеция 5p (синдром «кошачьего крика»), делеция в 21/22 хромосоме (злокачественная анемия).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">183.</span>В чем сущность псевдодоминирования. Рассмотреть это явление на примере Notch мутации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Псевдодоминирование — проявление рецессивного аллеля в фенотипе гетерозиготы из-за делеции доминантного аллеля на гомологичной хромосоме. Пример: Notch-мутация у дрозофилы (делеция доминантного аллеля проявляет рецессивный признак).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">184.</span>Охарактеризовать дупликации как хромосомные мутации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Дупликация — повторение (удвоение) участка хромосомы, увеличивающее дозу соответствующих генов. Часто возникает при неравном кроссинговере.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">185.</span>Охарактеризовать инверсии как хромосомные мутации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Инверсия — разрыв участка хромосомы, поворот на 180° и обратное присоединение. Меняет порядок генов (но не дозу). Парацентрическая (не затрагивает центромеру) и перицентрическая (затрагивает).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">186.</span>Охарактеризовать кольцевые хромосомы как хромосомные мутации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Кольцевая хромосома — образуется при утрате обоих теломерных участков с последующим слиянием концов хромосомы в кольцо. Вызывает хромосомную патологию.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">187.</span>Охарактеризовать изохромосомы как хромосомные мутации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Изохромосома — формируется при аномальном поперечном делении центромеры; оба плеча хромосомы становятся идентичными копиями одного плеча. Даёт частичную моносомию + частичную трисомию. Пример: изохромосома Х → синдром Шерешевского-Тернера.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">188.</span>В чем сущность реципрокных транслокаций как хромосомных мутаций, их последствия</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Реципрокная транслокация — обмен участками между двумя негомологичными хромосомами. Последствия: при сбалансированной транслокации фенотип нормальный, но в мейозе образуются несбалансированные гаметы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">189.</span>Робертсоновские транслокации, их формирование. Как формируется транслокационная форма синдрома Дауна</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Робертсоновская транслокация — слияние длинных плеч двух акроцентрических хромосом с потерей коротких плеч и одной центромеры. Транслокационный синдром Дауна: слияние 14/21 хромосом у одного из родителей → 1/4 гамет несут лишнюю 21-ю хромосому.</p></div></div>
+
+<div class="section">Мобильные генетические элементы и геномные мутации</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">190.</span>Что представляют собой по строению мобильные генетические элементы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Мобильные генетические элементы — последовательности ДНК, способные перемещаться по геному (содержат гены, кодирующие ферменты для перемещения, фланкированы повторами).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">191.</span>Какие механизмы используют мобильные генетические элементы для перемещения по геному</span><span class="arrow">›</span></div>
+<div class="card-a"><p>МГЭ перемещаются с помощью собственных ферментов (транспозазы/интегразы), которые вырезают/вставляют элемент в новое место геному, повреждая при этом ДНК в местах вставки.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">192.</span>Каким может быть эффект действия мобильных генетических элементов на клетку</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эффект МГЭ на клетку: могут вызывать мутации при встраивании в ген или рядом с ним, нарушать регуляцию соседних генов, способствовать хромосомным перестройкам.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">193.</span>К чему сводится механизм формирования полиплоидных организмов и полиплоидных соматических клеток</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полиплоидия (увеличение наборов хромосом) у организмов: при нерасхождении хромосом в мейозе образуются гаметы с удвоенным набором, их слияние с нормальной гаметой даёт триплоид; слияние двух диплоидных гамет — тетраплоид. У соматических клеток — через нарушение митоза или эндомитоз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">194.</span>Назовите причины по которым полиплоидизация среди животных встречается гораздо реже, чем среди растений</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Причины редкости полиплоидии у животных (в сравнении с растениями): нарушение баланса аутосом/половых хромосом, перекрёстное оплодотворение (единичный полиплоид не может размножаться сам), сложный онтогенез (полиплоидия чаще несовместима с жизнью), у растений гибриды часто стерильны и удваиваются.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">195.</span>Объяснить механизм формирования анеуплоидов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Анеуплоидия — изменение числа отдельных хромосом (не кратное гаплоидному набору). Механизм: нерасхождение хромосом в анафазе мейоза (или нерасхождение хроматид) — одна гамета получает лишнюю хромосому, другая — недостаёт.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">196.</span>Объяснить механизм возникновения мозаичных форм анеуплоидов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Мозаичные анеуплоиды возникают при нерасхождении хромосом в митозе соматических клеток (не в мейозе) — образуется клон мутантных клеток. Степень мозаицизма зависит от стадии развития, на которой произошла ошибка.</p></div></div>
+
+<div class="section">Хромосомные синдромы человека</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">197.</span>Приведите пример моносомии у человека, фенотипические проявления</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Моносомия у человека (45,Х0) — синдром Шерешевского-Тернера. Фенотип: женщины с атрофированными яичниками, бесплодны, низкий рост, короткая шея с крыловидными складками, без умственной неполноценности.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">198.</span>Полисомия у человека, связанная с нарушением расхождения половых хромосом. Трисомия-X, фенотипические проявления</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Трисомия-X (47,ХХХ): частота 1:1000 девочек. Фенотип обычно близок к норме, возможна лёгкая задержка развития, чаще фертильны, диагностируется случайно.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">199.</span>Полисомия у человека, связанная с нарушением расхождения половых хромосом. Синдром Клайнфельтера, фенотипические проявления</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Синдром Клайнфельтера (47,XXY): частота 1:700 мальчиков. До пубертата развитие нормальное; в пубертате — недоразвитие семенников, гинекомастия, высокий рост, бесплодие.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">200.</span>Полисомия у человека, связанная с нарушением расхождения половых хромосом. Синдром Y-дисомии</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Синдром Y-дисомии (47,XYY): частота ~1:1000. Фенотипически нормальные мужчины, без выраженных отклонений в развитии и фертильности, иногда отмечают склонность к импульсивному поведению.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">201.</span>Полисомии у человека, связанные с нарушением расхождения аутосом. Синдром Патау, фенотипические проявления</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Синдром Патау (трисомия 13, 47 хромосом): частота 1:5-7000. Высокая ранняя смертность (90% в первый год), пороки мозга и лица, кисты почек, изменения поджелудочной железы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">202.</span>Полисомии у человека, связанные с нарушением расхождения аутосом. Синдром Эдвардса, фенотипические проявления</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Синдром Эдвардса (трисомия 18, 47 хромосом): частота 1:7-10000. Резкое недоразвитие лицевой части черепа, дефекты сердца, у мальчиков крипторхизм, высокая летальность.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">203.</span>Полисомии у человека, связанные с нарушением расхождения аутосом. Синдром Дауна, фенотипические проявления</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Синдром Дауна (трисомия 21): наиболее частая хромосомная болезнь. Характерны: монголоидный разрез глаз, плоское лицо, мышечная гипотония, пороки сердца, умственная отсталость разной степени.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">204.</span>Какие заболевания человека получили название «хромосомные болезни». Что лежит в основе развития этих болезней. Что обозначают термином «хромосомные аномалии»</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Хромосомные болезни — врождённые заболевания, в основе которых лежат хромосомные и геномные мутации (вместе — «хромосомные аномалии»). Частота 6% среди перинатально погибших плодов, ~46% спонтанных абортов, 3-4 на 1000 новорождённых.</p></div></div>
+
+<div class="section">Генетика человека: методы исследования</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">205.</span>В силу каких причин человек является трудным объектом для генетических исследований</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Человек труден для генетики: невозможен гибридологический метод (нельзя подбирать пары для скрещивания), позднее половое созревание, малочисленное потомство, медленная сменяемость поколений (~25 лет), но большое генетическое разнообразие (много хромосом и генов) усложняет статистику.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">206.</span>Для решения каких теоретических и практических задач применяется генеалогический метод</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Генеалогический метод применяется для: установления наследственного характера признака, определения типа наследования и пенетрантности, анализа сцепления генов и картирования, изучения интенсивности мутагенеза, расшифровки взаимодействия генов, медико-генетического консультирования.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">207.</span>Чем характеризуется аутосомно-доминантный тип наследования признаков у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Аутосомно-доминантный тип: признак есть хотя бы у одного из родителей; наследуется по вертикали в каждом поколении; проявляется у 50% потомков гетерозиготного родителя; равно у обоих полов. Пример: карий цвет глаз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">208.</span>Чем характеризуется аутосомно-рецессивный тип наследования признаков у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Аутосомно-рецессивный тип: родители обычно здоровы (носители), признак может «пропускать» поколения (наследование по горизонтали), проявляется у 25% потомков двух гетерозигот, равно у обоих полов.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">209.</span>Чем характеризуется X-сцепленный рецессивный тип наследования признаков у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Х-сцепленный рецессивный тип: чаще болеют мужчины; передаётся от матери-носительницы сыновьям; отец никогда не передаёт сыну (передаёт дочерям-носительницам). Пример: гемофилия, дальтонизм.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">210.</span>Чем характеризуется X-сцепленный доминантный тип наследования признаков у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Х-сцепленный доминантный тип: болеют и мужчины, и женщины; отец передаёт признак всем дочерям (100%), но никогда — сыновьям; наследование по вертикали и горизонтали. Пример: цилиндроматоз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">211.</span>Чем характеризуется Y-сцепленный тип наследования признаков у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>У-сцепленный (голандрический) тип: признак передаётся только по мужской линии — от отца всем сыновьям в каждом поколении, женщины не болеют. Пример: гипертрихоз ушной раковины.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">212.</span>Что позволяет близнецовый метод при изучении наследственности человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Близнецовый метод позволяет оценить роль наследственности и среды в развитии признаков/болезней (сравнение моно- и дизиготных близнецов), выявить наследственный характер признака, пенетрантность, эффективность внешних факторов (лекарств, обучения).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">213.</span>Каковы возможности цитогенетического метода при использовании простой и дифференциальной окраски хромосом</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Простая окраска (по Гимзе) — равномерная окраска хромосом, выявляет числовые аномалии и явные структурные дефекты. Дифференциальная окраска — выявляет индивидуальный рисунок бэндов, точные структурные перестройки (даже минимальные).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">214.</span>Метод флюоресцентной гибридизации in situ (FISH-метод). Его принцип и возможности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>FISH-метод: ДНК-зонд с флюоресцентной меткой гибридизуется с комплементарным участком денатурированной хромосомной ДНК на препарате; меченые участки видны под люминесцентным микроскопом. Применение: пренатальная диагностика анеуплоидий, микроделеционные синдромы, мозаицизм.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">215.</span>Метод сравнительной геномной гибридизации на микрочипах. Его принцип и возможности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сравнительная геномная гибридизация на микрочипах — одновременное сравнение ДНК пациента с эталонной ДНК по множеству точек генома на чипе, выявляет микроделеции/микродупликации по всему геному с высоким разрешением.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">216.</span>Что является объектом биохимических исследований для диагностики наследственных болезней. Возможности биохимических методов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Объект биохимических исследований — биологические жидкости (кровь, моча) и ткани пациента. Возможности: выявление аномальных метаболитов, дефицита ферментов, нарушений обмена — диагностика наследственных болезней обмена веществ.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">217.</span>К чему сводится первичная и уточняющая биохимическая диагностика наследственных болезней</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Первичная биохимическая диагностика — скрининговые тесты (выявление отклонения показателя). Уточняющая — более специфичные методы (определение активности конкретного фермента, концентрации метаболита) для подтверждения диагноза.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">218.</span>Суть и возможности молекулярно-генетических методов (ДНК-диагностики)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Молекулярно-генетические методы (ДНК-диагностика) выявляют мутации/аномалии генов напрямую в ДНК. Возможности: диагностика наследственных болезней, установление родства, идентификация личности, фармакогенетика, селекция.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">219.</span>На каком принципе основан метод полимеразной цепной реакции (ПЦР). Перечислить компоненты, необходимые для проведения ПЦР</span><span class="arrow">›</span></div>
+<div class="card-a"><p>ПЦР — многократное копирование (амплификация) in vitro фрагмента ДНК по принципу репликации. Компоненты: ДНК-матрица, термостабильная ДНК-полимераза, дНТФ (4 вида), ионы Mg²⁺, буфер, праймеры.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">220.</span>Каким образом осуществляется регистрация результатов (детекция) при ПЦР в реальном времени. Роль ПЦР в клинико-диагностической практике</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Детекция ПЦР: классическая — электрофорез в геле с интеркалирующими красителями; ПЦР в реальном времени — гибридизационно-флуоресцентная детекция прямо во время реакции. Роль: диагностика инфекций, мутаций, идентификация личности.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">221.</span>В чем заключается метод ОТ-ПЦР (обратная транскрипция-ПЦР), его возможности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>ОТ-ПЦР: на матрице РНК синтезируется кДНК (обратная транскрипция), которую затем амплифицируют обычной ПЦР. Возможности: выявление РНК-вирусов, определение микроРНК-маркеров заболеваний.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">222.</span>Что представляет собой метод секвенирования как молекулярно-генетический метод. На каком принципе основано секвенирование по Сэнгеру, его возможности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Секвенирование по Сэнгеру: синтез цепи ДНК с включением меченых дидезоксинуклеотидов-терминаторов → капиллярный электрофорез разделяет фрагменты по длине → лазер регистрирует последовательность нуклеотидов.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">223.</span>Принцип и возможности нанопорового секвенирования</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Нанопоровое секвенирование: одноцепочечная ДНК проходит через нанопору в мембране, изменение электрического тока при прохождении каждого нуклеотида позволяет определить последовательность в реальном времени, без меток.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">224.</span>Экзомное секвенирование. Какое значение имеет секвенирование для генетики человека и других областей биологии</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Экзомное секвенирование — секвенирование только кодирующих участков (экзома). Значение: выявление мутаций, связанных с заболеваниями, систематика организмов, молекулярно-филогенетический анализ, исследование генетического разнообразия популяций.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">225.</span>К чему сводится метод генетики соматических клеток. Какие приемы использует этот метод, их суть</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Метод генетики соматических клеток — культивирование, клонирование, селекция и гибридизация клеточных культур человека (кровь, кожа, плацента и др.) для изучения сцепления генов, картирования, патогенеза болезней.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">226.</span>Дерматоглифический метод в генетике человека, его возможности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Дерматоглифический метод — анализ рисунков кожи на пальцах, ладонях, стопах (генетически детерминированы). Используется как вспомогательный метод диагностики некоторых хромосомных болезней (например, синдрома Дауна).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">227.</span>Какие возможности для генетики человека предоставляет популяционно-статистический метод</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Популяционно-статистический метод основан на законе Харди-Вайнберга (p²+2pq+q²=1). Позволяет: рассчитать частоту доминантного/рецессивного гена, частоту гомо-/гетерозигот в популяции, оценить пенетрантность и экспрессивность.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">228.</span>Пренатальная диагностика наследственных болезней, ее задачи. К чему сводятся непрямые методы пренатальной диагностики, показания для использования этих методов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Непрямые методы пренатальной диагностики — обследование беременной (УЗИ, акушерско-гинекологическое, генеалогическое исследование, сывороточные маркеры — АФП, ХГЧ). Показания: возраст ≥35 лет, спонтанные аборты в анамнезе, рождение ребёнка с пороками, носительство хромосомных перестроек.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">229.</span>Определение каких биохимических маркеров в крови беременной женщины имеет диагностическую ценность для диагностики синдрома Дауна</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Биохимические маркеры синдрома Дауна: снижение АФП (альфа-фетопротеина), повышение ХГЧ, снижение ПАПП-А, изменение свободной β-субъединицы ХГЧ — наиболее информативны на 16-18 неделе (и в I триместре).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">230.</span>Назовите, известные Вам, прямые методы пренатальной диагностики (неинвазивные и инвазивные). К чему сводится амниоцентез как прямой метод диагностики</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Неинвазивные прямые методы: УЗИ (10-13, 20-22, 30-33 нед.), ЭКГ плода. Инвазивные: биопсия хориона (7-16 нед.), амниоцентез (15-18/20 нед.) — забор амниотической жидкости через переднюю стенку под контролем УЗИ, кордоцентез (20-24 нед.).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">231.</span>Биопсия хориона и кордоцентез как прямые инвазивные методы пренатальной диагностики, их возможности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Биопсия хориона (10-11 нед.) — диагностика хромосомных аномалий, включая синдром Дауна, через катетер под контролем УЗИ. Кордоцентез (18-24 нед.) — забор крови плода из пуповины для генетического анализа.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">232.</span>Смысл проспективного и ретроспективного медико-генетического консультирования</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Проспективное консультирование — оценка риска до наступления беременности (по данным родословной), когда больного ребёнка пока нет. Ретроспективное — консультирование после рождения больного ребёнка, оценка риска для будущих детей.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">233.</span>Что служит показаниями для медико-генетического консультирования</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Показания для медико-генетического консультирования: наличие наследственного заболевания в семье, кровнородственный брак, возраст родителей, неблагоприятный анамнез беременностей, воздействие тератогенов, бесплодие неясного генеза.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">234.</span>Перечислить основные задачи, которые решает медико-генетическое консультирование</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Задачи медико-генетического консультирования: установление точного диагноза, пренатальная диагностика, определение типа наследования, оценка риска рождения больного ребёнка, пропаганда генетических знаний, выявление гетерозиготных носителей.</p></div></div>
+
+<div class="section">Эмбриология и Онтогенез</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">235.</span>Назовите особенности развития яйцеклеток, которые связаны с обеспечением ранних этапов развития зародыша. Дайте характеристику ооплазматической сегрегации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Ооплазматическая сегрегация — неравномерное распределение цитоплазматических компонентов (детерминантов) яйцеклетки уже на стадии её созревания, что определяет дальнейшую судьбу клеток зародыша на ранних этапах дробления.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">236.</span>Назовите фазы оплодотворения. Какими факторами обеспечивается сближение сперматозоида и яйцеклетки при оплодотворении</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Фазы оплодотворения: 1) сближение гамет, 2) активация гамет, 3) слияние (сингамия). Сближению способствуют: синхронность гаметогенеза, приспособления к совокуплению, избыточная продукция сперматозоидов, крупный размер яйцеклетки.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">237.</span>Назовите процессы активации сперматозоида и яйцеклетки при оплодотворении. В чем сущность этих процессов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Активация яйцеклетки при оплодотворении запускает кортикальную реакцию (предотвращает полиспермию) и возобновление мейоза. Активация сперматозоида — акросомальная реакция (выброс ферментов для проникновения через оболочки яйцеклетки).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">238.</span>Какой механизм препятствует полиспермии у млекопитающих при оплодотворении</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полиспермии у млекопитающих препятствует: связывание сперматозоида с рецептором блестящей оболочки и последующая блокада остальных рецепторов; у других животных — изменение электрического потенциала мембраны и образование оболочки оплодотворения.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">239.</span>Чем характеризуется стадия зиготы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Зигота — одноклеточная стадия после слияния гамет, содержит диплоидный набор хромосом (от обоих родителей), начинает серию митотических делений дробления.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">240.</span>Чем заканчивается дробление зиготы. Какие общие свойства характерны для всех делений дробления</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Дробление зиготы заканчивается формированием многоклеточной однослойной бластулы. Общие свойства делений дробления: клетки не растут (суммарный объём не меняется), ДНК удваивается каждый раз, дробление асинхронно.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">241.</span>Как протекает полное равномерное дробление. Для каких яйцеклеток и организмов оно характерно</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полное равномерное дробление — для изолецитальных яиц (ланцетник). Радиальный тип, бластомеры одинакового размера, образуется морула → целобластула (тонкостенная, с обширным бластоцелем).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">242.</span>Как протекает полное неравномерное дробление. Для каких яйцеклеток и организмов оно характерно</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Полное неравномерное дробление — характерно для умеренно телолецитальных яиц (амфибии): бластомеры на анимальном полюсе мельче, на вегетативном — крупнее (больше желтка). Образуется амфибластула.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">243.</span>Как протекает неполное дискоидальное дробление. Для каких яйцеклеток и организмов оно характерно</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Неполное дискоидальное дробление — для резко телолецитальных яиц (птицы): дробится только участок на анимальном полюсе, желток не делится. Образуется дискобластула, бластоцель в виде щели под бластодермой.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">244.</span>Как протекает неполное поверхностное дробление. Для каких яйцеклеток и организмов оно характерно</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Неполное поверхностное дробление — для центролецитальных яиц (насекомые): ядра делятся в толще желтка и мигрируют к периферии, где образуется слой клеток (бластодерма) вокруг центрального желтка.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">245.</span>В чем особенность дробления и формирования бластулы у млекопитающих</span><span class="arrow">›</span></div>
+<div class="card-a"><p>У млекопитающих дробление полное, неравномерное, асинхронное. Образуется морула (16-32 клетки) → трофобласт (наружный слой) + эмбриобласт (внутренняя масса) → бластоциста с бластоцелем.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">246.</span>Охарактеризовать инвагинацию и деляминацию как способы гаструляции. Для каких животных они характерны</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Инвагинация (впячивание) — характерна для ланцетника: участок бластулы впячивается в бластоцель, образуя двухслойный зародыш. Деляминация (расслоение) — у кишечнополостных: клетки бластодермы расслаиваются на эктодерму и энтодерму.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">247.</span>Охарактеризовать иммиграцию и эпиболию как способы гаструляции. Для каких животных они характерны</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Иммиграция (вселение) — клетки бластулы внедряются в бластоцель и образуют энтодерму. Эпиболия (обрастание) — микромеры наслаиваются на макромеры; за счёт микромеров — эктодерма, макромеров — энтодерма. У амфибий сочетаются инвагинация и эпиболия.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">248.</span>В чем сущность телобластического способа образования мезодермы. Для каких животных он характерен</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Телобластический способ образования мезодермы — мезодерма формируется из специальных крупных клеток (телобластов) на краях бластопора. Характерен для первичноротых (моллюски, кольчатые черви, членистоногие).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">249.</span>В чем сущность энтероцельного способа образования мезодермы. Для каких животных он характерен</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Энтероцельный способ — мезодерма образуется как выпячивания стенки первичной кишки (энтодермы). Характерен для вторичноротых (иглокожие, хордовые, в т.ч. ланцетник).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">250.</span>Нейруляция как фаза органогенеза, сущность и исход</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Нейруляция — образование осевых органов: нервной трубки и хорды. Эктодерма утолщается в нервную пластинку → нервные валики → нервная трубка (невроцель). Хорда обособляется из первичной кишки. По бокам формируются сомиты из мезодермы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">251.</span>Назвать структуры и органы, образующиеся в эмбриогенезе из эктодермы, энтодермы и мезодермы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эктодерма → нервная система, органы чувств, эпидермис, эмаль зубов. Энтодерма → эпителий средней кишки, пищеварительные железы, дыхательная система. Мезодерма → опорно-двигательный аппарат, мочеполовая система, кровеносная система, соединительная ткань.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">252.</span>Какие стадии эмбрионального развития относят к раннему развитию. Какова динамика активирования собственных генов зародыша</span><span class="arrow">›</span></div>
+<div class="card-a"><p>К раннему развитию относят: оплодотворение, дробление, гаструляцию. Динамика активации генов: на ранних стадиях развитие идёт за счёт материнских РНК/белков, постепенно (с определённого момента) активируются собственные гены зародыша.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">253.</span>Определить понятие: морфогенез. Назвать механизмы, определяющие морфогенез</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Морфогенез — формирование формы органа/организма в процессе развития. Механизмы: пролиферация, дифференцировка, морфогенетическое перемещение клеток, эмбриональная индукция, сортировка/адгезия клеток, межклеточные взаимодействия, программированная гибель клеток (апоптоз).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">254.</span>Что следует понимать под дифференцировкой клеток. Каковы первопричина и механизм дифференцировки клеток</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Дифференцировка клеток — процессы, ведущие к стабильным морфо-физио-биохимическим различиям между клетками общего происхождения. Первопричина — различия в спектре активных генов (наборе синтезируемых белков). Межклеточные взаимодействия — важный механизм на всех стадиях.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">255.</span>Какая связь существует между дифференцировкой клеток при развитии зародыша и ооплазматической сегрегацией</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Связь: неравномерное распределение цитоплазматических детерминантов яйцеклетки (ооплазматическая сегрегация) уже на ранних стадиях определяет, какие гены будут активированы в потомках бластомеров — то есть запускает первичную дифференцировку клеток.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">256.</span>Что понимают под термином «компетенция» относительно дифференцировки. Как меняется в эмбриогенезе компетенция стволовых клеток</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Компетенция — способность клеток дифференцироваться в нескольких направлениях под действием внешних факторов. В эмбриогенезе меняется: тотипотентность (зигота, ранние бластомеры) → плюрипотентность (бластула) → мультипотентность → унипотентность.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">257.</span>Какое значение в морфогенезе имеет перемещение клеток. Примеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Перемещение клеток важно для формирования структуры зародыша (гаструляция, миграция нервного гребня и др.). Пример: миграция первичных половых клеток к гонадам, перемещение клеток нервного гребня в разные органы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">258.</span>Что понимают под эмбриональной индукцией. Первичная эмбриональная индукция, роль в морфогенезе</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эмбриональная индукция — воздействие одной ткани (индуктора) на другую, вызывающее новую дифференцировку. Первичная эмбриональная индукция — воздействие хорды и мезодермы на эктодерму, в результате которой формируется нервная трубка.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">259.</span>Вторичные эмбриональные индукции. Механизм индукционных влияний при эмбриогенезе. Роль эмбриональных индукций в морфогенезе</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Вторичные индукции — последующие индукционные влияния (после первичной), при которых одна группа клеток через сигнальные молекулы (морфогены, факторы роста) запускает дифференцировку соседних клеток, формируя сложные органы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">260.</span>Межклеточные взаимодействия, их формы и роль в клеточной дифференцировке</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Межклеточные взаимодействия: 1) прямые контакты мембран, 2) диффузия веществ между клетками, 3) через внеклеточный матрикс. Роль: активация специфических генов, индукция дифференцировки на всех стадиях развития.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">261.</span>Роль гормонов в эмбриональном развитии</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Роль гормонов в эмбриогенезе: на ранних стадиях развитие регулируется индукционными взаимодействиями клеток и материнскими гормонами; позже появляются собственные гормоны зародыша, усиливающие дифференцировку и координирующие развитие.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">262.</span>Значение сортировки и адгезии клеток в морфогенезе при эмбриогенезе. Молекулярные механизмы клеточной адгезии</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Сортировка и адгезия клеток обеспечивают правильное распределение и группировку клеток разных типов при формировании тканей и органов (например, сортировка клеток при гаструляции). Молекулярный механизм — белки клеточной адгезии (кадгерины, интегрины и др.), узнающие «свои» клетки.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">263.</span>Роль гибели клеток в морфогенезе. Механизмы клеточной гибели</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Гибель клеток необходима для образования структур (протоки, отверстия). Два типа: апоптоз (физиологическая, генетически запрограммированная гибель, часть нормального морфогенеза) и некроз (патологическая гибель из-за повреждающих факторов).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">264.</span>Какие механизмы лежат в основе роста. Чем характеризуются ограниченный и неограниченный рост</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Механизмы роста: увеличение размера клеток, увеличение числа клеток, увеличение межклеточного вещества. Неограниченный рост — продолжается всю жизнь (рыбы). Ограниченный рост — выходит на плато (s-образная кривая), характерен для большинства позвоночных.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">265.</span>Какой кривой можно описать рост человека в целом и почему. Каков характер кривых роста вилочковой железы (тимуса), мозга и органов размножения</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Рост человека в целом описывается s-образной кривой (быстрый рост → замедление → плато). Тимус растёт быстро в детстве, затем уменьшается (инволюция). Мозг растёт быстро в раннем возрасте, затем рост замедляется. Половые органы быстро растут в пубертате.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">266.</span>В чем проявляется генетический контроль роста. Через какие факторы гены контролируют рост организма</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Генетический контроль роста действует на протяжении всего периода роста через факторы роста и гормоны (соматотропин — гипофиз, гормоны щитовидной железы, половые гормоны), а также через тканеспецифические ингибиторы — кейлоны.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">267.</span>Что понимают под конституционным типом и типом телосложения человека. Представить классификацию типов телосложения М.В. Черноруцкого. Особенности строения тела при разных типах телосложения</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Конституциональный тип — особенности внешних форм тела, функций и поведения человека. Классификация Черноруцкого: астенический (узкое сложение), нормостенический (пропорциональное), гиперстенический (широкое, плотное сложение).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">268.</span>Дать определение старения. В чем сущность «программных» гипотез старения</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Старение — постепенное снижение приспособительных возможностей организма с возрастом. «Программные» («запрограммированные») гипотезы старения: старение заложено в генетической программе развития (как продолжение онтогенеза).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">269.</span>В чем сущность «стохастических» гипотез старения. Представить схему последовательных событий, ведущих к старению организма</span><span class="arrow">›</span></div>
+<div class="card-a"><p>«Стохастические» гипотезы старения: старение — результат случайного накопления повреждений (соматических мутаций, ошибок синтеза белков, повреждения ДНК) под действием внутренних и внешних факторов в течение жизни.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">270.</span>Какое значение в процессах старения имеет повреждение молекул ДНК. В чем сущность свободнорадикальной теории старения</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Повреждение ДНК — одна из главных причин старения (разрывы, сшивки, депуринизация → соматические мутации). Свободнорадикальная теория: активные формы кислорода (продукты метаболизма) повреждают ДНК и другие молекулы, накапливая повреждения с возрастом.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">271.</span>Поясните положение: репарация ДНК является сдерживающим фактором старения</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Репарация ДНК устраняет повреждения, обеспечивая стабильность генетического материала и гомеостаз на генетическом уровне — это сдерживает накопление мутаций и тем самым замедляет старение организма.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">272.</span>Какие изменения наблюдаются при старении на генетическом и молекулярном уровне</span><span class="arrow">›</span></div>
+<div class="card-a"><p>На генетическом уровне при старении: повреждение ДНК, нарушение репликации, мутации, изменение свойств белков хроматина, нарушение функции репарационных ферментов. Причины: свободные радикалы, внешние факторы (излучение, химвещества).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">273.</span>Какие изменения наблюдаются при старении на клеточном уровне</span><span class="arrow">›</span></div>
+<div class="card-a"><p>На клеточном уровне при старении: снижение способности к делению, уменьшение числа функциональных клеток, изменение формы ядра, нарушение структуры митохондрий и рибосом, повреждение мембран лизосом.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">274.</span>Какие изменения наблюдаются при старении на тканевом, органном и системном уровнях</span><span class="arrow">›</span></div>
+<div class="card-a"><p>На тканевом/органном уровне: избыточное развитие соединительной ткани, атрофические/дистрофические изменения, уменьшение количества клеток паренхимы. На системном уровне: снижение эффективности нервной, эндокринной, иммунной, сердечно-сосудистой систем.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">275.</span>Что понимают под физиологической регенерацией. Значение физиологической регенерации для жизнедеятельности организма</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Физиологическая регенерация — восстановление структур, изнашиваемых в нормальной жизнедеятельности. Значение: основа структурного гомеостаза, обновление клеточного состава организма (постоянство ~10¹³-10¹⁴ клеток) на протяжении всего онтогенеза.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">276.</span>Охарактеризовать уровни, на которых осуществляется физиологическая регенерация</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Физиологическая регенерация осуществляется на молекулярном (обновление белков), субклеточном/клеточном (обновление органелл, деление клеток) и тканевом уровнях (обновление эпителия, крови и др.).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">277.</span>Что понимают под репаративной регенерацией. Признаки репаративной регенерации</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Репаративная регенерация — вторичное восстановление повреждённых органов/тканей после повреждения. Признаки: вторичность развития, наличие повреждения как причины, различный масштаб восстановления (зависит от вида/уровня организации).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">278.</span>Масштаб восстановления при репаративной регенерации, его границы у разных видов животных</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Масштаб репаративной регенерации: у плоских червей и гидры — большой (восстановление целого организма из малой части, у гидры — из 1/200), у высших животных масштаб регенерации значительно меньше (заживление ран).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">279.</span>Что понимают под атипичной регенерацией. Примеры. Гетероморфоз и гомоморфоз</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Атипичная регенерация — регенерировавший орган качественно/количественно отличается от утраченного. Гетероморфоз — появление иной структуры (плавник вместо конечности у аксолотля). Гомоморфоз — регенерация именно утраченного органа (норма).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">280.</span>Эпиморфоз как способ репаративной регенерации. Определение, характеристика, распространенность в природе</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эпиморфоз — восстановление органа путём роста новой части (регенерата) от раневой поверхности, старая и новая части различимы. Характерен для конечностей тритонов, хвоста ящериц, рогов оленей.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">281.</span>Морфаллаксис как способ репаративной регенерации. Определение, характеристика, распространенность в природе</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Морфаллаксис — регенерация через перестройку и рост оставшейся части органа/организма, без разграничения старых и новых частей (перестройка захватывает весь орган). Характерен для инфузорий, планарий, кишечнополостных.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">282.</span>Регенерация путем заполнения дефекта. Ее отличие от эпиморфоза. Для каких тканей и органов она характерна</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Регенерация путём заполнения дефекта — рост ткани идёт от раневой поверхности внутрь раны (в отличие от эпиморфоза, где рост идёт наружу). Характерна для мышц, костей, кожи млекопитающих (опыты Студитского).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">283.</span>Регенерационная гипертрофия как способ репаративной регенерации, характеристика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Регенерационная гипертрофия: восстанавливается масса, но не форма органа; рост идёт не от раневой поверхности, а за счёт остатка органа; восстанавливаются все ткани (по органному типу). Характерна для печени, лёгких, почек, надпочечников.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">284.</span>На каких уровнях происходит восстановление при регенерационной гипертрофии. Что понимают под «внутриклеточной репаративной регенерацией»</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Регенерационная гипертрофия происходит на клеточном уровне через пролиферацию и гипертрофию клеток (полиплоидизация, увеличение числа органелл). «Внутриклеточная репаративная регенерация» — восстановление повреждённых структур внутри самой клетки без её деления.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">285.</span>Компенсаторная гипертрофия, сходство и отличие с регенерационной гипертрофией</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эволюционная характеристика: чем выше уровень организации, тем меньше масштаб регенерации (у низших — восстановление целого организма из части, у высших — только заживление ран и регенерационная гипертрофия отдельных органов).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">286.</span>Эволюционная характеристика регенерационной способности</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Регуляторные механизмы регенерации: внутриклеточные, внутритканевые (местный гуморальный контроль — кейлоны), межтканевые (дистантный гуморальный контроль — гормоны, факторы роста), гормональные (тиреоидные гормоны, гормон роста), нервные (трофическая функция).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">287.</span>Назвать регуляторные механизмы, участвующие в регуляции процессов регенерации с пояснением механизмов их действия</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Стволовые клетки — низкодифференцированные клетки с высоким потенциалом деления и дифференцировки. По потенциалу: тотипотентные (любые типы клеток + внезародышевые), плюрипотентные, мультипотентные, унипотентные.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">288.</span>Стволовые клетки как источник регенерационного материала, определение и их возможности. Классификация стволовых клеток по способности к дифференцировке</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Региональные стволовые клетки присутствуют в тканях взрослого организма и обеспечивают их обновление и регенерацию. Гемопоэтические стволовые клетки дают клетки крови; мезенхимальные — дают клетки соединительной ткани, кости, хряща, жира.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">289.</span>Региональные стволовые клетки, их роль в регенерационных процессах. Гемопоэтические и мезенхимальные стволовые клетки</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Регенерационная способность сохраняется в течение жизни (масштаб регенерации не зависит от возраста), но скорость регенерации с возрастом снижается из-за уменьшения пролиферативной активности клеток.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">290.</span>Соотношение регенерации и онтогенеза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Ихтиопсидный тип мозга (рыбы, амфибии): ведущий отдел — средний мозг (зрительные доли), передний мозг небольшой и выполняет преимущественно обонятельную функцию, кора не развита.</p></div></div>
+
+<div class="section">Филогенез систем органов хордовых</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">291.</span>Особенности ихтиопсидного типа мозга. Для каких животных характерен этот тип</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Зауропсидный тип мозга (пресмыкающиеся, птицы): передний мозг крупнее, развиты полосатые тела (высший интегрирующий центр), на поверхности — островки древней коры; средний мозг теряет ведущее значение.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">292.</span>Особенности зауропсидного типа мозга. Для каких животных характерен этот тип</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Маммалийный тип мозга (млекопитающие): сильное развитие переднего мозга за счёт коры (высшие центры анализаторов), есть комиссуры между полушариями, развит промежуточный мозг и мозжечок, в среднем мозге — четверохолмие.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">293.</span>Особенности маммалийного типа мозга. Для каких животных характерен этот тип</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Маммалийный тип характерен только для млекопитающих — высокоразвитая кора, интегрирующая все виды чувствительности и высшую нервную деятельность, хорошо развитый мозжечок (см. вопрос 292).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">294.</span>Нарушения развития головного и спинного мозга у человека (рахисхиз, прозэнцефалия, агирия, олигогирия с пахигирией)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Пороки развития мозга у человека: рахисхиз (незакрытие спинномозгового канала), прозэнцефалия (нет разделения полушарий, несовместима с жизнью), агирия (нет извилин), олигогирия с пахигирией (мало утолщённых извилин, грубая олигофрения).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">295.</span>Чем могут выражаться нарушения развития сердца у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Нарушения развития сердца: эктопия сердца (аномальное расположение вне грудной клетки), двухкамерное сердце (несовместимо с жизнью), дефект межпредсердной перегородки, дефект межжелудочковой перегородки (нарушают гемодинамику).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">296.</span>Как формируются артериальные сосуды у млекопитающих и человека на базе закладок жаберных дуг</span><span class="arrow">›</span></div>
+<div class="card-a"><p>В эмбриогенезе закладывается 6 пар жаберных артериальных дуг (1-2 пары редуцируются). У наземных позвоночных 3-я пара становится сонными артериями, 4-я пара — дугами аорты (основные сосуды большого круга).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">297.</span>Какие пороки развития сосудов, отходящих от сердца, имеют место у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Пороки сосудов сердца: персистирование обеих 4-х дуг (нарушение глотания), персистирование общего артериального ствола (смешение крови, смертельно), персистирование боталлова протока (открытый артериальный проток — сброс крови из БКК в МКК).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">298.</span>Какие пороки развития половых желез встречаются у человека, их характеристика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Пороки половых желёз: первичный гермафродитизм (овотестис — сочетание ткани семенника и яичника), крипторхизм (неопущение яичек в мошонку), мужская маточка (рудимент мюллерова канала у мужчин).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">299.</span>Организация и функционирование предпочки</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Предпочка (пронефрос) — самая примитивная почка, функционирует только в эмбриональном периоде (у некоторых круглоротых — во взрослом состоянии). 6-12 нефронов без прямой связи кровеносной и выделительной систем (продукты обмена попадают в целом).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">300.</span>Организация и функционирование первичной почки</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Первичная почка (мезонефрос) функционирует у эмбрионов всех позвоночных и у взрослых рыб/амфибий. Имеет больше нефронов, есть прямая связь с кровеносной системой (капиллярный клубочек в капсуле нефрона) — более эффективная фильтрация.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">301.</span>Организация и функционирование вторичной почки</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Вторичная почка (метанефрос) — окончательная почка высших позвоночных (пресмыкающиеся, птицы, млекопитающие, человек). Множество нефронов с петлёй (петля Генле), высокая эффективность фильтрации и концентрации мочи.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">302.</span>Какие наблюдаются пороки развития почек у человека, основанные на их филогенезе</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Пороки почек по филогенезу: сегментированная вторичная почка (рекапитуляция эмбрионального строения), удвоение почки (нарушение слияния зачатков), тазовое расположение почки (нарушение миграции почки в эмбриогенезе).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">303.</span>Какие пороки развития наблюдаются у человека при нарушении эмбриогенеза со стороны мюллерова и вольфова каналов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Нарушение редукции вольфовых каналов у женщин (кисты, злокачественное перерождение); удвоение матки (неполное срастание мюллеровых каналов); разделённая матка (срастание каналов без разрушения внутренней стенки).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">304.</span>Формирование вторичного твердого неба у млекопитающих. Атавистические аномалии ротовой полости</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Атавистические аномалии зубов: гомодонтная зубная система (все зубы одинаковой конической формы), трёхбугорчатое строение коренных зубов, прорезывание сверхкомплектных зубов (в т.ч. на твёрдом нёбе).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">305.</span>Приведите примеры атавистических аномалий зубной системы у человека</span><span class="arrow">›</span></div>
+<div class="card-a"><p>См. вопрос 304 — атавизмы зубной системы человека: гомодонтия, трёхбугорчатые коренные зубы, сверхкомплектные зубы — рудиментарные признаки, отражающие филогенез зубной системы предков человека.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">306.</span>Приведите примеры аномалий у человека со стороны пищеварительной трубки, поджелудочной железы и печени</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Аномалии пищеварительной трубки: атрезии (заращение) пищевода/кишечника, дивертикул Меккеля (остаток желточного протока); печени/поджелудочной железы — добавочные доли, кольцевидная поджелудочная железа, аномалии протоков.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">307.</span>Какие аномалии могут быть у человека при нарушении эмбриогенеза во время закладки зачатков жаберных щелей</span><span class="arrow">›</span></div>
+<div class="card-a"><p>При нарушении закладки жаберных щелей: латеральные свищи шеи (сохранение связи с глоткой или кожей — внутренние/наружные шейные синусы) и латеральные кисты шеи (зачаток не связан ни с глоткой, ни с поверхностью, заполнен жидкостью/воздухом).</p></div></div>
+
+<div class="section">Паразитология. Простейшие (Протозоология)</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">308.</span>Морфологические и физиологические особенности мелкой, крупной и тканевой форм дизентерийной амебы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Дизентерийная амёба (Entamoeba histolytica): мелкая вегетативная форма (8-20 мкм, в просвете кишки), крупная вегетативная форма (до 45 мкм, с эритроцитами в цитоплазме, в язвах), тканевая форма (мельче крупной, без эритроцитов, в тканях).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">309.</span>Эксцистирование как стадия жизненного цикла дизентерийной амебы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эксцистирование — выход амёбы из цисты в активную (вегетативную) форму в толстой кишке человека; начало размножения и патогенного действия (симптомы дизентерии).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">310.</span>Инцистирование как стадия жизненного цикла дизентерийной амебы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Инцистирование — превращение вегетативной (просветной) формы амёбы в цисту в неблагоприятных условиях (при выходе из организма) — обеспечивает выживание во внешней среде и передачу инвазии.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">311.</span>Трансформация просветной формы в большую вегетативную как стадия жизненного цикла дизентерийной амебы</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Трансформация просветной формы в крупную вегетативную происходит в благоприятных условиях (достаточно питательных веществ) — амёба активно размножается, увеливается, становится патогенной (инвазия в ткани).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">312.</span>Способ и источник заражения амебиазом, лабораторная диагностика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Заражение амебиазом — фекально-оральный путь через загрязнённую воду/пищу, содержащую цисты. Диагностика — микроскопия фекалий на наличие цист и вегетативных форм амёбы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">313.</span>Характеристика вегетативной формы (трофозоита) лямблии кишечной</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Трофозоит лямблии — вегетативная грушевидная форма с 2 ядрами и присасывательным диском, обитает в тонком кишечнике, питается через поверхность, передвигается жгутиками, размножается продольным делением.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">314.</span>Жизненный цикл лямблии кишечной. Способ и источник заражения лямблиозом</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл лямблии: трофозоит (вегетативная стадия в кишечнике) → цисты (выделяются с фекалиями) → попадание цист в окружающую среду → заражение через грязную воду/пищу (фекально-оральный путь).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">315.</span>Мочеполовая трихомонада, способ заражения, локализация, лабораторная диагностика и профилактика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Trichomonas vaginalis — передаётся половым путём, локализуется в мочеполовых органах. Диагностика — микроскопия выделений, культуральный метод, ПЦР. Профилактика — барьерная контрацепция, обследование партнёров.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">316.</span>Балантидий кишечный, характеристика вегетативной формы и цисты</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Балантидий кишечный — крупная вегетативная форма (амёбовидная, с ядром и псевдоподиями) и циста (толстая защитная оболочка, содержит зрелое ядро, обеспечивает выживание во внешней среде и заражение).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">317.</span>Балантидий кишечный, источник и способ заражения, жизненный цикл</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Балантидий: источник заражения — свиньи (резервуар), заражение через недостаточно обработанное мясо или загрязнённую воду/пищу. Жизненный цикл: тканевая форма у свиньи → циста → цисты разрушаются в кишечнике человека → трофозоиты размножаются и снова образуют цисты.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">318.</span>Токсоплазма, характеристика вегетативной формы, локализация</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Toxoplasma gondii — вегетативная форма (тахизоит) — мобильная, активно проникает в клетки. Локализация: мозг, лёгкие, печень, сердце, клетки нервной системы, макрофаги, эндотелий.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">319.</span>Жизненный цикл токсоплазмы (развитие в окончательном хозяине)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл токсоплазмы в окончательном хозяине (кот): ооцисты с калом → созревание во внешней среде → заражение кота → размножение бесполым путём в кишечнике → выделение новых ооцист с калом.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">320.</span>Жизненный цикл токсоплазмы (развитие в промежуточном хозяине)</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл токсоплазмы в промежуточном хозяине (человек и др. животные): заражение ооцистами/тахизоитами → бесполое размножение (эндодиогения) в тканях → формирование тканевых цист с брадизоитами (хроническая форма).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">321.</span>Способ и источник заражения человека токсоплазмозом. Особенности лабораторной диагностики</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Заражение токсоплазмозом: геооральный путь (ооцисты от кошек из почвы), алиментарный (недоваренное мясо с тахизоитами/цистами), реже — трансплацентарный. Диагностика: паразитологическая, иммунологическая (антитела), ПЦР.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">322.</span>Как протекает и чем заканчивается экзоэритроцитарная шизогония жизненного цикла малярийного плазмодия</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Экзоэритроцитарная (тканевая) шизогония малярийного плазмодия — бесполое размножение в клетках печени после укуса комара; заканчивается выходом мерозоитов в кровь, которые внедряются в эритроциты.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">323.</span>Как происходит и чем заканчивается эритроцитарная шизогония жизненного цикла малярийного плазмодия</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Эритроцитарная шизогония — мерозоиты внедряются в эритроциты → шизонт растёт, питаясь гемоглобином → размножается шизогонией → эритроцит разрушается, мерозоиты выходят в плазму и заражают новые эритроциты (циклы соответствуют приступам лихорадки).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">324.</span>Развитие малярийных плазмодиев в организме окончательного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>В окончательном хозяине (самка комара Anopheles) происходит половое развитие плазмодия: гаметоциты из крови человека образуют гаметы → зигота → ооциста в стенке кишечника комара → спорозоиты, мигрирующие в слюнные железы.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">325.</span>Патогенное действие малярийного плазмодия, лабораторная диагностика малярии</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Патогенное действие малярийного плазмодия: разрушение эритроцитов (анемия, гемолиз), приступы лихорадки (циклы шизогонии), увеличение печени/селезёнки. Диагностика — микроскопия толстого мазка/тонкого мазка крови (обнаружение паразитов в эритроцитах).</p></div></div>
+
+<div class="section">Паразитология. Сосальщики (Трематоды)</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">326.</span>Представить жизненный цикл сибирского сосальщика, указав личиночные стадии, а также промежуточного и постоянного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл сибирского (кошачьего) сосальщика: яйцо в воде → мирацидий → моллюск Bithynia (спороциста-редия-церкарий) → рыба семейства карповых (метацеркарий) → человек/кошка/собака (окончательные хозяева). Заболевание — описторхоз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">327.</span>Представить жизненный цикл легочного сосальщика, указав личиночные стадии, а также промежуточного и постоянного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл легочного сосальщика: яйцо в воде → мирацидий → моллюск рода Melania → раки/крабы (метацеркарий) → человек/кошка/собака (окончательные хозяева). Заболевание — парагонимоз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">328.</span>Представить жизненный цикл печеночного сосальщика, указав личиночные стадии, а также промежуточного и постоянного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл печёночного сосальщика: яйцо в воде → мирацидий → малый прудовик (спороциста-редия-церкарий) → адолескарии на растениях у водоёма → крупный рогатый скот/человек (окончательные хозяева). Заболевание — фасциолёз.</p></div></div>
+
+<div class="section">Паразитология. Ленточные черви (Цестоды)</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">329.</span>Представить жизненный цикл свиного цепня, указав все личиночные стадии, а также промежуточного и постоянного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл свиного цепня: яйцо/онкосфера → финна в мышцах свиньи (промежуточный хозяин) → половозрелая форма в кишечнике человека (окончательный хозяин). Заболевание — тениоз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">330.</span>Цистицеркоз. Пути возникновения. Локализация паразита. Профилактика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Цистицеркоз — заражение финнозными стадиями свиного цепня (человек становится промежуточным хозяином). Пути: аутоинвазия (заброс зрелых члеников в желудок при рвоте) или проглатывание яиц из загрязнённой пищи. Профилактика — личная гигиена, борьба с тениозом.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">331.</span>Представить жизненный цикл бычьего цепня, указав все личиночные стадии, а также промежуточного и постоянного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл бычьего цепня: яйцо/онкосфера → финна в мышцах крупного рогатого скота (промежуточный хозяин) → половозрелая форма в кишечнике человека (единственный окончательный хозяин). Заболевание — тениаринхоз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">332.</span>Представить жизненный цикл карликового цепня</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл карликового цепня — особенность: может проходить полный цикл в одном организме человека без промежуточного хозяина (онкосфера → цистицеркоид в ворсинках кишечника → половозрелая форма), что облегчает аутоинвазию.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">333.</span>Карликовый цепень, морфологические особенности, лабораторная диагностика и профилактика гименолепидоза</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Карликовый цепень (Hymenolepis nana): размеры 1,5-5 см, сколекс с крючьями и присосками. Диагностика — обнаружение яиц в фекалиях (округлые, бесцветные, до 40 мкм). Профилактика — гигиена, борьба с грызунами/насекомыми.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">334.</span>Представить жизненный цикл эхинококка, указав все личиночные стадии, а также промежуточного и постоянного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл эхинококка: яйцо/онкосфера → финна (пузырь) в печени промежуточного хозяина (овца, человек и др.) → половозрелая форма в кишечнике собаки/волка (окончательный хозяин). Заболевание — эхинококкоз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">335.</span>Представить жизненный цикл альвеококка, указав все личиночные стадии, а также промежуточного и постоянного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл альвеококка: аналогичен эхинококку, но промежуточные хозяева — мышевидные грызуны и человек, окончательные — собака, волк, лисица, песец. Заболевание — альвеококкоз (финна растёт инвазивно, как опухоль).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">336.</span>Представить жизненный цикл лентеца широкого, указав все личиночные стадии, а также промежуточного и постоянного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл лентеца широкого: яйцо в воде → корацидий → циклоп (процеркоид) → рыба (плероцеркоид) → человек/плотоядные (окончательные хозяева). Заболевание — дифиллоботриоз.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">337.</span>Особенности строения гермафродитных и зрелых члеников бычьего, свиного цепней и широкого лентеца</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Гермафродитные членики цепней/лентеца содержат и мужские, и женские половые органы (созревающие). Зрелые членики — матка заполнена яйцами, остальные органы редуцированы/атрофированы (отличие — строение матки: разветвлённая у цепней, спиралевидная у лентеца).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">338.</span>Назовите отличительные морфологические признаки эхинококка и альвеококка на стадии половозрелой особи и финны</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Половозрелая особь: эхинококк мелкий (3-5 мм, 3-4 членика), альвеококк ещё мельче, с меньшим числом крючьев. Финна эхинококка — крупный пузырь с дочерними пузырями внутри; финна альвеококка — скопление мелких пузырьков, растущих наружу (инвазивный рост).</p></div></div>
+
+<div class="section">Паразитология. Круглые черви (Нематоды)</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">339.</span>Острица, морфологические особенности, локализация, лабораторная диагностика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Острица (Enterobius vermicularis): небольшой червь (самка 10-12мм, самец 2-5мм), везикула на головном конце. Локализация — нижний отдел тонкой/начало толстой кишки. Диагностика — обнаружение яиц в перианальном мазке.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">340.</span>Жизненный цикл острицы, пути заражения</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл острицы: оплодотворение в кишечнике → самка откладывает яйца в перианальных складках ночью (зуд) → яйца становятся инвазионными через 4-6 часов → заражение фекально-оральным путём (часто аутоинвазия через грязные руки).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">341.</span>Аскарида человеческая, морфологические особенности, локализация, лабораторная диагностика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Аскарида человеческая (Ascaris lumbricoides): крупный геогельминт, паразитирует только у человека. Локализация — тонкий кишечник. Диагностика — обнаружение яиц в фекалиях.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">342.</span>Жизненный цикл аскариды человеческой</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл аскариды: яйца с фекалиями → дозревание в почве (21-24 суток) → проглатывание яйца → личинка в кишечнике → миграция через кровь, печень, лёгкие, бронхи, трахею, глотку → повторное проглатывание → половозрелая форма в кишечнике (миграция ~2 недели).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">343.</span>Власоглав, морфологические особенности, локализация, лабораторная диагностика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Власоглав (Trichocephalus trichiurus): передний конец тонкий (волосовидный), задний утолщён. Локализация — слепая и восходящая ободочная кишка. Диагностика — яйца лимонообразной формы с пробочками на полюсах в фекалиях.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">344.</span>Представить жизненный цикл трихинеллы, указать личиночные стадии, окончательного и промежуточного хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Жизненный цикл трихинеллы: личинки в мясе → освобождение в кишечнике → половозрелые формы (кишечная стадия) → личинки мигрируют через лимфу/кровь (миграционная стадия) → оседают в мышцах, капсулируются (мышечная стадия). Окончательный=промежуточный хозяин (один организм).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">345.</span>Трихинелла, морфологические особенности, локализация, лабораторная диагностика</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Trichinella spiralis: микроскопические размеры (самки 3-4мм, самцы 1,5-2мм), живорождение. Локализация: половозрелые — тонкий кишечник, личинки — поперечно-полосатые мышцы (диафрагма, межрёберные и др.). Диагностика — биопсия мышц, иммунологические методы.</p></div></div>
+
+<div class="section">Паразитология. Членистоногие (Arthropoda)</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">346.</span>Представить развитие иксодовых клещей, указать животных прокормителей на каждой стадии цикла</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Развитие иксодовых клещей: яйцо (без прокормителя) → личинка (3 пары ног, прокормители — ящерицы, мелкие грызуны) → нимфа (4 пары ног, прокормители — зайцы, белки, крысы) → имаго (прокормители — крупные животные, человек).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">347.</span>Назвать иксодовых клещей, имеющих медицинское значение. Указать переносчиками каких заболеваний они являются</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Иксодовые клещи медицинского значения: таёжный клещ (болезнь Лайма, клещевой энцефалит), собачий клещ (туляремия, шотландский энцефалит), пастбищный клещ (таёжный энцефалит), клещи Hyalomma (крымская геморрагическая лихорадка, туляремия, бруцеллёз).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">348.</span>Назвать отличительные морфологические особенности аргасовых клещей. Переносчиками и резервуаром какого заболевания является поселковый клещ</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Аргазовые клещи: серого цвета, ~1 см, без щитков, краевой рант (утолщение по бокам), ротовой аппарат расположен вентрально. Поселковый клещ — переносчик и резервуар возвратного клещевого тифа.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">349.</span>Чесоточный клещ. Особенности строения, развития и медицинское значение</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Чесоточный клещ (Sarcoptes scabiei): тело широкоовальное (до 0,4мм), укороченные ноги с присосками, дышит через поверхность тела, нет глаз. Вызывает чесотку (внутрикожные ходы, сильный зуд ночью, вторичная инфекция).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">350.</span>Головная вошь, отличительные внешние признаки, развитие и медицинское значение</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Головная вошь: размер 2-3мм, тело сплющено дорсо-вентрально, 3 пары ног с коготками. Развитие с неполным метаморфозом, яйца (гниды) приклеены к волосам. Медицинское значение — педикулёз, переносчик сыпного тифа.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">351.</span>Платяная вошь, отличительные внешние признаки, развитие и медицинское значение</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Платяная вошь: крупнее головной (до 4,7мм), живёт на белье/одежде. Откладывает яйца на волоски ткани. Медицинское значение — специфический переносчик сыпного и возвратного тифа.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">352.</span>Человеческая блоха, морфологические особенности, развитие, медицинское значение</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Человеческая блоха (Pulex irritans): тело сжато с боков, прыгательные ноги, бескрылое насекомое с полным метаморфозом (личинка-куколка-взрослая). Медицинское значение — переносчик чумы, может быть промежуточным хозяином ленточных червей.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">353.</span>Перечислить отличительные признаки малярийных и немалярийных комаров на всех стадиях развития</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Отличия малярийного (Anopheles) и немалярийного (Culex) комара по стадиям: яйцо (Anopheles — отдельно с поплавками на поверхности воды; Culex — кучкой, плотиком), личинка (Anopheles располагается горизонтально у поверхности, без сифона; Culex — под углом, с сифоном), куколка, имаго (поза при посадке: Anopheles держит тело под углом, Culex — параллельно поверхности).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">354.</span>Медицинское значение малярийных и немалярийных комаров. Назовите, известные Вам профилактические мероприятия</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Медицинское значение: Anopheles — переносчик малярии; Culex/Aedes — переносчики других инфекций (энцефалиты, филяриоз и др.). Профилактика — осушение водоёмов, использование репеллентов, инсектициды, сетки на окнах.</p></div></div>
+
+<div class="section">Паразитология. Общие вопросы и экология паразитизма</div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">355.</span>Назовите, известные Вам формы паразитизма</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Формы паразитизма: истинный (закономерный, эволюционно обусловленный), ложный (случайный, у обычно свободноживущего вида), облигатный (обязателен для вида), факультативный (вид может жить свободно, но может паразитировать).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">356.</span>Назвать пути проникновения паразитов в организм хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Пути проникновения паразитов в организм хозяина: через пищеварительный тракт (загрязнённая еда/вода), через кожу (контакт с почвой/водой), через дыхательные пути, через кровь (укусы насекомых), через половые пути.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">357.</span>Адаптация паразитов к паразитическому образу жизни</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Адаптации паразитов: прикрепление и проникновение в хозяина, обход иммунной системы, размножение внутри хозяина, изменение поведения хозяина, способность к длительному выживанию в неблагоприятных условиях организма-хозяина.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">358.</span>Жизненный цикл паразитов. Окончательные, промежуточные и резервуарные хозяева паразитов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Окончательный хозяин — паразит достигает половой зрелости. Промежуточный хозяин — паразит проходит личиночное развитие, но не достигает зрелости. Резервуарный хозяин — может быть заражён, но не обязателен для цикла развития паразита.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">359.</span>Какие паразитарные заболевания относят к зоонозным и антропонозным, примеры</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Зоонозные заболевания передаются от животных человеку (трихинеллёз, токсоплазмоз, эхинококкоз, малярия — переносчик-комар). Антропонозные — передаются только между людьми (например, некоторые формы гельминтозов с прямым контактным путём, как энтеробиоз).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">360.</span>К чему сводится влияние паразита на организм хозяина</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Влияние паразита на хозяина: разнообразно — заболевания, снижение иммунитета, аллергические реакции, повреждение органов/тканей; может быть острым (явные симптомы) или скрытым (хроническое, постепенное ухудшение здоровья).</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">361.</span>К чему сводятся реакции организма хозяина на воздействие паразитов</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Реакции хозяина на паразита: иммунный ответ, воспаление, лихорадка, изменения поведения и физиологии — направлены на уничтожение или избавление от паразита для сохранения здоровья и выживания хозяина.</p></div></div>
+<div class="card"><div class="card-q" onclick="toggle(this)"><span><span class="num">362.</span>Что характерно для заболеваний с природной очаговостью. Природный очаг, назвать компоненты природного очага</span><span class="arrow">›</span></div>
+<div class="card-a"><p>Природный очаг — территория, где циркулирует возбудитель среди диких животных (резервуаров) при участии переносчиков. Компоненты: возбудитель, носители/резервуары инфекции, переносчики, восприимчивые организмы, благоприятные природные условия (климат, ландшафт).</p></div></div>
+
+<!-- конец .grid -->
+</div><!-- конец .wrap -->
+
+<script>
+function toggle(el) {
+  el.classList.toggle('open');
+  const ans = el.nextElementSibling;
+  ans.classList.toggle('visible');
+}
+
+function search(val) {
+  const q = val.toLowerCase().trim();
+  const cards = document.querySelectorAll('.card');
+  const sections = document.querySelectorAll('.section');
+  let visible = 0;
+
+  // hide/show cards
+  cards.forEach(c => {
+    const text = c.textContent.toLowerCase();
+    const show = !q || text.includes(q);
+    c.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+
+  // hide section headers if all following cards are hidden
+  sections.forEach(s => {
+    let next = s.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('section')) {
+      if (!next.classList.contains('hidden')) hasVisible = true;
+      next = next.nextElementSibling;
+    }
+    s.classList.toggle('hidden', !hasVisible);
+  });
+
+  document.getElementById('count').textContent = q ? visible + ' рез.' : '';
+}
+
+  function expandSection(btn) {
+    var toolbar = btn.parentElement;
+    var el = toolbar.nextElementSibling;
+    var cards = [];
+    while (el && !el.classList.contains('section') && !el.classList.contains('toolbar')) {
+      if (el.classList.contains('card')) cards.push(el);
+      el = el.nextElementSibling;
+    }
+    var anyOpen = cards.some(function(card) {
+      var q = card.querySelector('.card-q');
+      return q && q.classList.contains('open');
+    });
+    cards.forEach(function(card) {
+      var q = card.querySelector('.card-q');
+      var a = card.querySelector('.card-a');
+      if (!q || !a) return;
+      if (anyOpen) { q.classList.remove('open'); a.classList.remove('visible'); }
+      else { q.classList.add('open'); a.classList.add('visible'); }
+    });
+    btn.textContent = anyOpen ? '▼ Раскрыть всё' : '▲ Свернуть всё';
+  }
+
+</script>
+</body>
+</html>
